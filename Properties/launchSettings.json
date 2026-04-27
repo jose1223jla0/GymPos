@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GymPos (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "GymPos (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
