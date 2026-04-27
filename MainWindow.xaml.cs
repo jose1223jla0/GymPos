@@ -36,7 +36,7 @@ namespace GymPos
                 return;
             }
 
-            string tag = args.SelectedItemContainer.Tag.ToString();
+            string? tag = args.SelectedItemContainer.Tag.ToString();
 
             switch (tag)
             {

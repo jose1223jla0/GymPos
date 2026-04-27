@@ -18,6 +18,7 @@
     <None Remove="Views\ClientePage.xaml" />
     <None Remove="Views\DashboardPage.xaml" />
     <None Remove="Views\InicioPage.xaml" />
+    <None Remove="Views\LoginPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +53,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\LoginPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\AsistenciaPage.xaml">

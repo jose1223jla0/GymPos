@@ -56,7 +56,7 @@
             Grid.Row="1"
             AutoGenerateColumns="False"
             IsReadOnly="True"
-            SelectionMode="None">
+            SelectionMode="Single">
 
             <tv:TableView.Columns>
 
