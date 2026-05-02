@@ -1,6 +1,7 @@
 ﻿using GymPos.Data.DbData;
 using GymPos.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ public interface IRepositoryCliente
 {
     Task<List<Cliente>> GetAll();
     Task AddCliente(Cliente cliente);
+    Task UpdateCliente(Cliente cliente);
 }
 
 public class RepositoryCliente : IRepositoryCliente
@@ -29,6 +31,19 @@ public class RepositoryCliente : IRepositoryCliente
     public async Task AddCliente(Cliente cliente)
     {
         _context.Clientes.Add(cliente);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateCliente(Cliente cliente)
+    {
+        var existeCliente= await _context.Clientes.FindAsync(cliente.IdCliente);
+        if(existeCliente == null)
+        {
+            throw new Exception("Cliente no encontrado");
+        }
+        existeCliente.Nombres = cliente.Nombres;
+        existeCliente.Apellidos = cliente.Apellidos;
+        existeCliente.Dni = cliente.Dni;
         await _context.SaveChangesAsync();
     }
 }

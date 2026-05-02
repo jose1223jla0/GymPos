@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="GymPos.Views.ClientesPage.AddClientePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GymPos.Views.ClientesPage"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel Spacing="12" Padding="5">
+
+        <!-- Nombres -->
+        <Border CornerRadius="8" Padding="10">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xE77B;" />
+                <TextBox
+                    Width="300"
+                    Text="{Binding Nombres,Mode=TwoWay}"
+                    PlaceholderText="Ingrese Nombres"
+                    BorderThickness="1"/>
+            </StackPanel>
+        </Border>
+
+
+        <!-- Apellidos -->
+        <Border CornerRadius="8" Padding="10">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xE77B;"  />
+                <TextBox 
+                    Width="300"
+                    Text="{Binding Apellidos, Mode=TwoWay}"
+                    PlaceholderText="Ingrese Apellidos"
+                    BorderThickness="1"/>
+            </StackPanel>
+        </Border>
+
+
+        <!-- dni -->
+        <Border CornerRadius="8" Padding="10">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xF034;" />
+                <TextBox 
+                    Width="300"
+                    Text="{Binding Dni, Mode=TwoWay}"
+                    PlaceholderText="Ingrese Dni"
+                    BorderThickness="1"/>
+            </StackPanel>
+        </Border>
+
+    </StackPanel>
+</UserControl>

@@ -3,14 +3,15 @@
     x:Class="GymPos.Views.ClientePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:GymPos.Views"
+    xmlns:local="using:GymPos.Views.ClientesPage"
     xmlns:tv="using:WinUI.TableView"
     xmlns:vm="using:GymPos.ViewModels.Clientes"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Padding="20" HorizontalAlignment="Left"
+    <Grid Padding="20" 
+          HorizontalAlignment="Center"
           RowSpacing="10"
           VerticalAlignment="Top">
 
@@ -29,6 +30,7 @@
             <Button Background="{ThemeResource AccentFillColorDefaultBrush}"
                     Padding="10"
                     Grid.Column="1"
+                    Command="{Binding AddClienteCommand}"
                     HorizontalAlignment="Right">
 
                 <StackPanel Orientation="Horizontal" Spacing="6">
@@ -47,13 +49,14 @@
                 QueryIcon="Find"/>
         </Grid>
 
-
-
         <!-- TABLEVIEW -->
         <tv:TableView
-            ItemsSource="{Binding clientes}"
-            FontSize="12"
-            Grid.Row="1"
+            x:Name="RootTable"
+            ItemsSource="{Binding ClienteList}"
+            FontSize="13"
+            Grid.Row="2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
             AutoGenerateColumns="False"
             IsReadOnly="True"
             SelectionMode="Single">
@@ -63,26 +66,26 @@
                 <tv:TableViewTextColumn
                     Header="Número"
                     Width="100"
-                    Binding="{Binding Id}" />
+                    Binding="{Binding IdCliente}" />
 
                 <tv:TableViewTextColumn
                     Header="DNI"
-                    Width="100"
+                    Width="200"
                     Binding="{Binding Dni}" />
 
                 <tv:TableViewTextColumn
-                    Width="200"
+                    Width="300"
                     Header="Nombres"
                     Binding="{Binding Nombres}" />
 
                 <tv:TableViewTextColumn
                     Header="Apellidos"
-                    Width="200"
+                    Width="300"
                     Binding="{Binding Apellidos}" />
 
                 <tv:TableViewTemplateColumn
                     Header="Acciones"
-                    Width="160">
+                    Width="200">
 
                     <tv:TableViewTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -113,8 +116,32 @@
                 </tv:TableViewTemplateColumn>
 
             </tv:TableView.Columns>
-
         </tv:TableView>
+        
+        <ContentDialog 
+            x:Name="ProductoDialog"
+            Title="Registro De Clientes"
+            MaxWidth="500"
+            CornerRadius="20"
+            Padding="0"
+            PrimaryButtonText="Guardar"
+            CloseButtonText="Cancelar">
+            <local:AddClientePage/>
+            <ContentDialog.PrimaryButtonStyle>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="#4F46E5"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="CornerRadius" Value="8"/>
+                    <Setter Property="Padding" Value="12,6"/>
+                </Style>
+            </ContentDialog.PrimaryButtonStyle>
 
+            <ContentDialog.CloseButtonStyle>
+                <Style TargetType="Button">
+                    <Setter Property="Foreground" Value="Gray"/>
+                    <Setter Property="CornerRadius" Value="8"/>
+                </Style>
+            </ContentDialog.CloseButtonStyle>
+        </ContentDialog>
     </Grid>
 </Page>

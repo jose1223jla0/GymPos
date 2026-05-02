@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GymPos.Data.DbData;
 
-public class GymPosContext: DbContext
+public class GymPosContext : DbContext
 {
     public GymPosContext()
     {
@@ -14,4 +14,7 @@ public class GymPosContext: DbContext
     {
     }
     public DbSet<Cliente> Clientes { get; set; }
+    public DbSet<Membresia> Membresias { get; set; }
+    public DbSet<Asistencia> Asistencias { get; set; }
+    public DbSet<Suscripcion> Suscripciones { get; set; }
 }

@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using GymPos.Models;
 using GymPos.Repository;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
@@ -9,37 +10,45 @@ namespace GymPos.ViewModels.Clientes;
 
 public partial class ClienteViewModel : ObservableObject
 {
-    
-    public ObservableCollection<Cliente> clientes { get; set; } = new();
+    public ObservableCollection<Cliente> ClienteList { get; } = new();
     private readonly IRepositoryCliente _repositoryCliente;
-
+    public event Action<Cliente?>? OpenDialogRequested;
 
     public ClienteViewModel(IRepositoryCliente repositoryCliente)
     {
         _repositoryCliente = repositoryCliente;
     }
 
-
-    [RelayCommand]
-    public async Task LoadClientes()
+    public async Task InitAsync()
     {
-        var listaClientes = await _repositoryCliente.GetAll();
-        clientes.Clear();
-        foreach (var item in listaClientes)
+        await LoadClientes();
+    }
+
+    private async Task LoadClientes()
+    {
+        var lista = await _repositoryCliente.GetAll();
+        ClienteList.Clear();
+        foreach (var item in lista)
         {
-            clientes.Add(item);
+            ClienteList.Add(item);
         }
     }
 
+    [RelayCommand]
+    private async Task AddCliente()
+    {
+        OpenDialogRequested?.Invoke(null);
+    }
 
     [RelayCommand]
     private void Edit(Cliente cliente)
     {
+        OpenDialogRequested?.Invoke(cliente);
     }
 
     [RelayCommand]
     private void Delete(Cliente cliente)
     {
-        clientes.Remove(cliente);
+        ClienteList.Remove(cliente);
     }
 }

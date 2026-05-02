@@ -2,6 +2,7 @@
 using GymPos.Repository;
 using GymPos.Services;
 using GymPos.ViewModels.Clientes;
+using GymPos.ViewModels.Membresias;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -30,10 +31,12 @@ public partial class App : Application
         });
         // Repository
         services.AddTransient<IRepositoryCliente, RepositoryCliente>();
-
+        services.AddTransient<IRepositoryMembresia, RepositoryMembresia>();
 
         // ViewModels
         services.AddTransient<ClienteViewModel>();
+        services.AddTransient<AddClienteViewModel>();
+        services.AddTransient<MembresiaViewModel>();
         //services.AddTransient<LoginViewModel>();
 
 

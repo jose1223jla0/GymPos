@@ -1,4 +1,5 @@
 using GymPos.Views;
+using GymPos.Views.MembresiaPage;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -17,45 +18,44 @@ using Windows.Foundation.Collections;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace GymPos
+namespace GymPos;
+
+/// <summary>
+/// An empty window that can be used on its own or navigated to within a Frame.
+/// </summary>
+public sealed partial class MainWindow : Window
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
+        InitializeComponent();
+    }
+
+    private void nvSample_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+    {
+        if (args.SelectedItemContainer == null)
         {
-            InitializeComponent();
+            return;
         }
 
-        private void nvSample_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        string? tag = args.SelectedItemContainer.Tag.ToString();
+
+        switch (tag)
         {
-            if (args.SelectedItemContainer == null)
-            {
-                return;
-            }
+            case "SamplePage1":
+                contentFrame.Navigate(typeof(DashboardPage));
+                break;
 
-            string? tag = args.SelectedItemContainer.Tag.ToString();
+            case "SamplePage2":
+                contentFrame.Navigate(typeof(ClientePage));
+                break;
 
-            switch (tag)
-            {
-                case "SamplePage1":
-                    contentFrame.Navigate(typeof(DashboardPage));
-                    break;
+            case "SamplePage3":
+                contentFrame.Navigate(typeof(AsistenciaPage));
+                break;
 
-                case "SamplePage2":
-                    contentFrame.Navigate(typeof(ClientePage));
-                    break;
-
-                case "SamplePage3":
-                    contentFrame.Navigate(typeof(AsistenciaPage));
-                    break;
-
-                case "SamplePage4":
-                    contentFrame.Navigate(typeof(InicioPage));
-                    break;
-            }
+            case "SamplePage4":
+                contentFrame.Navigate(typeof(MembresiaListPage));
+                break;
         }
     }
 }

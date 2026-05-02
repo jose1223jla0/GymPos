@@ -9,9 +9,6 @@
     mc:Ignorable="d">
 
     <Grid>
-        <TextBlock Text="Asistencia Page" 
-                   FontSize="24" 
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center"/>
+        
     </Grid>
 </Page>

@@ -16,9 +16,12 @@
   <ItemGroup>
     <None Remove="Views\AsistenciaPage.xaml" />
     <None Remove="Views\ClientePage.xaml" />
+    <None Remove="Views\ClientesPage\AddClientePage.xaml" />
     <None Remove="Views\DashboardPage.xaml" />
     <None Remove="Views\InicioPage.xaml" />
     <None Remove="Views\LoginPage.xaml" />
+    <None Remove="Views\MembresiaPage\MembresiaListPage.xaml" />
+    <None Remove="Views\SuscripcionPage\CreateSuscripcionPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,7 +55,9 @@
     <PackageReference Include="WinUI.TableView" Version="1.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
+    <Page Update="Views\ClientesPage\AddClientePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\LoginPage.xaml">
@@ -76,6 +81,16 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\ClientePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\MembresiaPage\MembresiaListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SuscripcionPage\CreateSuscripcionPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

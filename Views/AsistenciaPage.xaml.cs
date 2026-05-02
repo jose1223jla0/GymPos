@@ -1,31 +1,27 @@
-using Microsoft.UI.Xaml;
+using GymPos.ViewModels.Asistencias;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
-namespace GymPos.Views
+namespace GymPos.Views;
+public sealed partial class AsistenciaPage : Page
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class AsistenciaPage : Page
+    public AsistenciaPage()
     {
-        public AsistenciaPage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        DataContext = new AsistenciaViewModel();
+    }
+
+    private async void Button_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        //FormDialog.XamlRoot = Content.XamlRoot;
+
+        //var result = await FormDialog.ShowAsync();
+
+        //if (result == ContentDialogResult.Primary)
+        //{
+        //    string nombre = NombreBox.Text;
+        //    string email = EmailBox.Text;
+        //    string pass = PasswordBox.Password;
+        //}
     }
 }
