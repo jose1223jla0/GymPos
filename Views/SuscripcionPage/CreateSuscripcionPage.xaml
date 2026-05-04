@@ -5,16 +5,55 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:GymPos.Views.SuscripcionPage"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mod="using:GymPos.Models"
+    xmlns:vm="CreateSuscripcionViewModel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Grid Padding="30">
-
         <StackPanel Spacing="18">
-
             <!-- HEADER -->
             <TextBlock Text="Crear Suscripción"
                        FontSize="28"
                        FontWeight="Bold"/>
+
+            <!-- CLIENTE -->
+            <!--<StackPanel>
+                <TextBlock Text="Cliente" FontWeight="SemiBold"/>
+
+                <ComboBox x:Name="cmbClientes"
+                          PlaceholderText="Selecciona un cliente"/>
+            </StackPanel>-->
+            <StackPanel>
+                <TextBlock Text="Buscar cliente" Foreground="#777"/>
+                <AutoSuggestBox
+                    Text="{x:Bind ViewModel.Dni, Mode=TwoWay}"
+                    ItemsSource="{x:Bind ViewModel.ClientesSugeridos}"
+                    TextChanged="AutoSuggestBox_TextChanged"
+                    SuggestionChosen="AutoSuggestBox_SuggestionChosen"
+                    DisplayMemberPath="Dni">
+
+                    <AutoSuggestBox.QueryIcon>
+                        <SymbolIcon Symbol="Find"/>
+                    </AutoSuggestBox.QueryIcon>
+             
+
+                </AutoSuggestBox>
+            </StackPanel>
+
+            <TextBlock Text="{x:Bind ViewModel.ClienteSeleccionado.Nombres, Mode=TwoWay}"
+                       FontSize="16"
+                       FontWeight="SemiBold"/>
+
+            <StackPanel Orientation="Horizontal" Spacing="200">
+                <StackPanel>
+                    <TextBlock Text="Fecha de Inicio" Foreground="#777"/>
+                    <CalendarDatePicker PlaceholderText="Seleccione una Fecha"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="Fecha final" Foreground="#777"/>
+                    <CalendarDatePicker PlaceholderText="Seleccione una Fecha"/>
+                </StackPanel>
+            </StackPanel>
 
             <!-- MEMBRESÍA SELECCIONADA -->
             <Border Padding="15"
@@ -25,21 +64,16 @@
                     <TextBlock Text="Membresía seleccionada"
                                Foreground="#9CA3AF"/>
 
-                    <TextBlock x:Name="txtMembresia"
-                               FontSize="20"
-                               FontWeight="Bold"
-                               Foreground="White"/>
+                    <TextBlock
+                        Text="{x:Bind ViewModel.MembresiaSeleccionada.Nombre, Mode=OneWay, FallbackValue='Sin seleccionar'}"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="White"/>
                 </StackPanel>
 
             </Border>
 
-            <!-- CLIENTE -->
-            <StackPanel>
-                <TextBlock Text="Cliente" FontWeight="SemiBold"/>
 
-                <ComboBox x:Name="cmbClientes"
-                          PlaceholderText="Selecciona un cliente"/>
-            </StackPanel>
 
             <!-- INFO AUTOMÁTICA -->
             <Border Padding="12"
@@ -64,6 +98,5 @@
                     CornerRadius="8"/>
 
         </StackPanel>
-
     </Grid>
 </Page>

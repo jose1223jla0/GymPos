@@ -14,18 +14,20 @@
     </Window.SystemBackdrop>
     <Grid>
         <NavigationView x:Name="nvSample"
+                        Grid.Row="1"
                         PaneTitle="GymPOS"
                         SelectionFollowsFocus="Enabled"
                         PaneDisplayMode="Auto"
                         IsBackButtonVisible="Collapsed"
                         IsPaneOpen="True"
-                       CompactPaneLength="60"
-                        
+                        CompactPaneLength="60"
                         SelectionChanged="nvSample_SelectionChanged">
+
+
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="Dashboard" Tag="SamplePage1">
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE80F;"/>
+                        <FontIcon Glyph="&#xE80F;" FontSize="24"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
@@ -46,7 +48,6 @@
                         <FontIcon Glyph="&#xE895;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-
                 
             </NavigationView.MenuItems>
             <Frame x:Name="contentFrame"/>

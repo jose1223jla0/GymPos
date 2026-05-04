@@ -3,6 +3,7 @@ using GymPos.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GymPos.Repository;
@@ -12,6 +13,8 @@ public interface IRepositoryCliente
     Task<List<Cliente>> GetAll();
     Task AddCliente(Cliente cliente);
     Task UpdateCliente(Cliente cliente);
+    Task<Cliente?> GetClienteByDni(string dni);
+    Task<List<Cliente>> BuscarPorDniParcial(string dni);
 }
 
 public class RepositoryCliente : IRepositoryCliente
@@ -45,5 +48,18 @@ public class RepositoryCliente : IRepositoryCliente
         existeCliente.Apellidos = cliente.Apellidos;
         existeCliente.Dni = cliente.Dni;
         await _context.SaveChangesAsync();
+    }
+    public async Task<Cliente?> GetClienteByDni(string dni)
+    {
+        return await _context.Clientes.FirstOrDefaultAsync(c => c.Dni == dni);
+    }
+
+    public async Task<List<Cliente>> BuscarPorDniParcial(string dni)
+    {
+        return await _context.Clientes
+            .Where(c => c.Dni.Contains(dni))
+            .OrderBy(c => c.Dni)
+            .Take(10)
+            .ToListAsync();
     }
 }

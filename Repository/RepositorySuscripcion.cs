@@ -31,7 +31,7 @@ public class RepositorySuscripcion : IRepositorySuscripcion
     public async Task<List<Suscripcion>> GetActivasByCliente(int clienteId)
     {
         return await _context.Suscripciones
-            .Where(s => s.IdCliente == clienteId && s.Estado == EstadoSuscripcion.Activa)
+            .Where(s => s.IdCliente == clienteId && s.EstadoSuscripcion == EstadoSuscripcion.Activa)
             .ToListAsync();
     }
 }

@@ -37,7 +37,7 @@ public class ServiceCliente : IServiceCliente
             IdMembresia = idMembresia,
             FechaInicio = fechaInicio,
             FechaFin = fechaInicio.AddDays(membresia.Sesiones),
-            Estado = EstadoSuscripcion.Activa
+            EstadoSuscripcion = EstadoSuscripcion.Activa
         };
         await _repoSuscripcion.AddSuscripcionAsync(suscripcion);
     }

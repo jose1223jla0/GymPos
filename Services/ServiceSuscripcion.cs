@@ -28,7 +28,7 @@ public class ServiceSuscripcion: IServiceSuscripcion
         {
             if (s.FechaFin < DateOnly.FromDateTime(DateTime.Now))
             {
-                s.Estado = EstadoSuscripcion.Vencida;
+                s.EstadoSuscripcion = EstadoSuscripcion.Vencida;
             }
         }
 
@@ -47,7 +47,7 @@ public class ServiceSuscripcion: IServiceSuscripcion
             IdMembresia = membresiaId,
             FechaInicio = fechaInicio,
             FechaFin = fechaInicio.AddDays(membresia.Sesiones),
-            Estado = EstadoSuscripcion.Activa
+            EstadoSuscripcion = EstadoSuscripcion.Activa
         };
 
         await _repositorySuscripcion.AddSuscripcionAsync(nueva);

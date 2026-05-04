@@ -47,6 +47,5 @@
                     BorderThickness="1"/>
             </StackPanel>
         </Border>
-
     </StackPanel>
 </UserControl>
