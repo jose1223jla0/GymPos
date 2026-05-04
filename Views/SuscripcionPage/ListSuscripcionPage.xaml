@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="GymPos.Views.SuscripcionPage.ListSuscripcionPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GymPos.Views.SuscripcionPage"
+    xmlns:tv="using:WinUI.TableView"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <!-- TABLEVIEW -->
+        <tv:TableView
+            x:Name="RootTable"
+            ItemsSource="{Binding ListSuscripciones}"
+            FontSize="13"
+            Grid.Row="2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            AutoGenerateColumns="False"
+            IsReadOnly="True"
+            SelectionMode="Single">
+
+            <tv:TableView.Columns>
+
+                <tv:TableViewTextColumn
+                        Header="Número"
+                        Width="100"
+                        Binding="{Binding IdSuscripcion}" />
+
+                <tv:TableViewTextColumn
+                        Header="DNI"
+                        Width="200"
+                        Binding="{Binding IdMembresia}" />
+
+                <tv:TableViewTextColumn
+                        Width="300"
+                        Header="Nombres"
+                        Binding="{Binding FechaInicio}" />
+
+                <tv:TableViewTextColumn
+                        Header="Apellidos"
+                        Width="300"
+                        Binding="{Binding FechaFin}" />
+
+                <tv:TableViewTextColumn
+                        Header="Apellidos"
+                        Width="300"
+                        Binding="{Binding EstadoSuscripcion}" />
+
+                <tv:TableViewTemplateColumn
+                        Header="Acciones"
+                        Width="200">
+
+                    <tv:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate>
+
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+
+                                <!-- EDITAR -->
+                                <Button Background="Transparent"
+                                        Command="{Binding DataContext.EditCommand, ElementName=RootTable}"
+                                        CommandParameter="{Binding}" >
+                                    <FontIcon Glyph="&#xE70F;" Foreground="Red" 
+                                          FontSize="15"/>
+                                </Button>
+
+                                <!-- ELIMINAR -->
+                                <Button Background="Transparent"
+                                        Command="{Binding DataContext.DeleteCommand, ElementName=RootTable}"
+                                        CommandParameter="{Binding}">
+                                    <FontIcon Glyph="&#xE701;" Foreground="Blue" 
+                                          FontSize="15" />
+                                </Button>
+
+                            </StackPanel>
+
+                        </DataTemplate>
+                    </tv:TableViewTemplateColumn.CellTemplate>
+
+                </tv:TableViewTemplateColumn>
+
+            </tv:TableView.Columns>
+        </tv:TableView>
+
+        <!--<ContentDialog 
+                x:Name="ProductoDialog"
+                Title="Registro De Clientes"
+                MaxWidth="500"
+                CornerRadius="20"
+                Padding="0"
+                PrimaryButtonText="Guardar"
+                CloseButtonText="Cancelar">
+            <local:ListSuscripcionPage/>
+            <ContentDialog.PrimaryButtonStyle>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="#4F46E5"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="CornerRadius" Value="8"/>
+                    <Setter Property="Padding" Value="12,6"/>
+                </Style>
+            </ContentDialog.PrimaryButtonStyle>
+
+            <ContentDialog.CloseButtonStyle>
+                <Style TargetType="Button">
+                    <Setter Property="Foreground" Value="Gray"/>
+                    <Setter Property="CornerRadius" Value="8"/>
+                </Style>
+            </ContentDialog.CloseButtonStyle>
+        </ContentDialog>-->
+    </Grid>
+</Page>

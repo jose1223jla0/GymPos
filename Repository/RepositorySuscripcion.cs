@@ -10,6 +10,7 @@ namespace GymPos.Repository;
 
 public interface IRepositorySuscripcion
 {
+    Task<IEnumerable<Suscripcion>> GetAllSuscripcion();
     Task AddSuscripcionAsync(Suscripcion suscripcion);
     Task<List<Suscripcion>> GetActivasByCliente(int clienteId);
 }
@@ -33,5 +34,10 @@ public class RepositorySuscripcion : IRepositorySuscripcion
         return await _context.Suscripciones
             .Where(s => s.IdCliente == clienteId && s.EstadoSuscripcion == EstadoSuscripcion.Activa)
             .ToListAsync();
+    }
+    public async Task<IEnumerable<Suscripcion>> GetAllSuscripcion()
+    {
+        var listaSuscripcion = await _context.Suscripciones.ToListAsync();
+        return listaSuscripcion;
     }
 }
