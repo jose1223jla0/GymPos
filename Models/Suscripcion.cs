@@ -9,7 +9,6 @@ public class Suscripcion
 {
     [Key]
     public int IdSuscripcion { get; set; }
-   
     public int IdCliente { get; set; }
     public int IdMembresia { get; set; }
     public DateOnly FechaInicio { get; set; }
