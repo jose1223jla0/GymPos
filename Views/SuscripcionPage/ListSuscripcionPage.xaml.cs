@@ -12,13 +12,9 @@ public sealed partial class ListSuscripcionPage : Page
         InitializeComponent();
         ViewModel=App.Services!.GetRequiredService<ListSuscripcionViewModel>();
         DataContext = ViewModel;
-        Loaded += ListSuscripcionPage_Loaded;
+        Loaded += SuscripcionListPage_Loaded;
     }
 
-    private void ListSuscripcionPage_Loaded(object sender, RoutedEventArgs e)
-    {
-       
-    }
 
     public async void SuscripcionListPage_Loaded(object sender, RoutedEventArgs e)
     {

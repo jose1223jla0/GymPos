@@ -4,18 +4,36 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:GymPos.Views.SuscripcionPage"
+    xmlns:conv="using:GymPos.Converters"
     xmlns:tv="using:WinUI.TableView"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid>
+    <Page.Resources>
+        <conv:EstadoToColorConverter x:Key="EstadoToColorConverter"/>
+    </Page.Resources>
+
+    <Grid Margin="20" RowSpacing="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Clientes con Suscripciones"
+                       Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"
+                       HorizontalAlignment="Center"
+                       FontSize="16"/>
+        </StackPanel>
+        
         <!-- TABLEVIEW -->
         <tv:TableView
             x:Name="RootTable"
+            Grid.Row="1"
             ItemsSource="{Binding ListSuscripciones}"
             FontSize="13"
-            Grid.Row="2"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             AutoGenerateColumns="False"
@@ -25,29 +43,51 @@
             <tv:TableView.Columns>
 
                 <tv:TableViewTextColumn
-                        Header="Número"
-                        Width="100"
-                        Binding="{Binding IdSuscripcion}" />
+                    Header="Id"
+                    Width="60"
+                    Binding="{Binding IdSuscripcion}" />
 
                 <tv:TableViewTextColumn
-                        Header="DNI"
-                        Width="200"
-                        Binding="{Binding IdMembresia}" />
+                    Width="150"
+                    Header="Membresía"
+                    Binding="{Binding Membresia.Nombre}" />
 
                 <tv:TableViewTextColumn
-                        Width="300"
-                        Header="Nombres"
-                        Binding="{Binding FechaInicio}" />
+                    Header="Nombres"
+                    Width="150"
+                    Binding="{Binding Cliente.Nombres}" />
 
                 <tv:TableViewTextColumn
-                        Header="Apellidos"
-                        Width="300"
-                        Binding="{Binding FechaFin}" />
+                    Header="Apellidos"
+                    Width="150"
+                    Binding="{Binding Cliente.Apellidos}" />
 
                 <tv:TableViewTextColumn
-                        Header="Apellidos"
-                        Width="300"
-                        Binding="{Binding EstadoSuscripcion}" />
+                    Header="Fecha Inicio"
+                    Width="120"
+                    Binding="{Binding FechaInicio}" />
+
+                <tv:TableViewTextColumn
+                    Header="Fecha Final"
+                    Width="120"
+                    Binding="{Binding FechaFin}" />
+
+                <tv:TableViewTemplateColumn 
+                    Header="Estado"
+                    Width="120">
+                    <tv:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border Padding="10,2"
+                                    CornerRadius="10"
+                                    Background="{Binding EstadoSuscripcion, Converter={StaticResource EstadoToColorConverter}}"
+                                    HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding EstadoSuscripcion}"
+                                           Foreground="White"
+                                           FontWeight="SemiBold"/>
+                            </Border>
+                        </DataTemplate>
+                    </tv:TableViewTemplateColumn.CellTemplate>
+                </tv:TableViewTemplateColumn>
 
                 <tv:TableViewTemplateColumn
                         Header="Acciones"
@@ -70,7 +110,7 @@
                                 <Button Background="Transparent"
                                         Command="{Binding DataContext.DeleteCommand, ElementName=RootTable}"
                                         CommandParameter="{Binding}">
-                                    <FontIcon Glyph="&#xE701;" Foreground="Blue" 
+                                    <FontIcon  Glyph="&#xE72C;" Foreground="Blue" 
                                           FontSize="15" />
                                 </Button>
 

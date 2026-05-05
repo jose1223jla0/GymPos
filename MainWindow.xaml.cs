@@ -1,5 +1,7 @@
 using GymPos.Views;
+using GymPos.Views.AsistenciaPage;
 using GymPos.Views.MembresiaPage;
+using GymPos.Views.SuscripcionPage;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 namespace GymPos;
@@ -31,11 +33,15 @@ public sealed partial class MainWindow : Window
                 break;
 
             case "SamplePage3":
-                contentFrame.Navigate(typeof(AsistenciaPage));
+                contentFrame.Navigate(typeof(ListSuscripcionPage));
                 break;
 
             case "SamplePage4":
                 contentFrame.Navigate(typeof(MembresiaListPage));
+                break;
+
+            case "SamplePage5":
+                contentFrame.Navigate(typeof(ListAsistenciaPage));
                 break;
         }
     }

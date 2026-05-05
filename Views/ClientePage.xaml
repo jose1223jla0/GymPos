@@ -60,13 +60,40 @@
             AutoGenerateColumns="False"
             IsReadOnly="True"
             SelectionMode="Single">
-
             <tv:TableView.Columns>
 
                 <tv:TableViewTextColumn
                     Header="Número"
-                    Width="100"
+                    Width="60"
                     Binding="{Binding IdCliente}" />
+                <!-- AVATAR + ID -->
+                <tv:TableViewTemplateColumn 
+                    Header="Avatar" 
+                    Width="80">
+                    <tv:TableViewTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="10"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+
+                                <!-- AVATAR -->
+                                <Grid Width="34" 
+                                      Height="34">
+                                    <Ellipse Fill="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+
+                                    <TextBlock 
+                                        Text="JA"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Foreground="White"
+                                        FontSize="14"
+                                        FontWeight="Bold"/>
+                                </Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </tv:TableViewTemplateColumn.CellTemplate>
+                </tv:TableViewTemplateColumn>
 
                 <tv:TableViewTextColumn
                     Header="DNI"
@@ -99,15 +126,6 @@
                                     <FontIcon Glyph="&#xE70F;" Foreground="Red" 
                                               FontSize="15"/>
                                 </Button>
-
-                                <!-- ELIMINAR -->
-                                <Button Background="Transparent"
-                                        Command="{Binding DataContext.DeleteCommand, ElementName=RootTable}"
-                                        CommandParameter="{Binding}">
-                                    <FontIcon Glyph="&#xE701;" Foreground="Blue" 
-                                              FontSize="15" />
-                                </Button>
-
                             </StackPanel>
 
                         </DataTemplate>
@@ -117,7 +135,7 @@
 
             </tv:TableView.Columns>
         </tv:TableView>
-        
+
         <ContentDialog 
             x:Name="ProductoDialog"
             Title="Registro De Clientes"

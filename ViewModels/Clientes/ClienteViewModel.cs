@@ -45,10 +45,4 @@ public partial class ClienteViewModel : ObservableObject
     {
         OpenDialogRequested?.Invoke(cliente);
     }
-
-    [RelayCommand]
-    private void Delete(Cliente cliente)
-    {
-        ClienteList.Remove(cliente);
-    }
 }

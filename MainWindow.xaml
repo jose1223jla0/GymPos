@@ -22,8 +22,6 @@
                         IsPaneOpen="True"
                         CompactPaneLength="60"
                         SelectionChanged="nvSample_SelectionChanged">
-
-
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="Dashboard" Tag="SamplePage1">
                     <NavigationViewItem.Icon>
@@ -48,7 +46,13 @@
                         <FontIcon Glyph="&#xE895;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                
+
+                <NavigationViewItem Content="Asistencia" Tag="SamplePage5">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xF0B5;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
             </NavigationView.MenuItems>
             <Frame x:Name="contentFrame"/>
             </NavigationView>

@@ -1,6 +1,7 @@
 ﻿using GymPos.Data.DbData;
 using GymPos.Repository;
 using GymPos.Services;
+using GymPos.ViewModels.Asistencias;
 using GymPos.ViewModels.Clientes;
 using GymPos.ViewModels.Membresias;
 using GymPos.ViewModels.Suscripciones;
@@ -34,6 +35,7 @@ public partial class App : Application
         services.AddTransient<IRepositoryCliente, RepositoryCliente>();
         services.AddTransient<IRepositorySuscripcion, RepositorySuscripcion>();
         services.AddTransient<IRepositoryMembresia, RepositoryMembresia>();
+        services.AddTransient<IRepositoryAsistencia, RepositoryAsistencia>();
         services.AddTransient<IServiceCliente, ServiceCliente>();
         services.AddTransient<IServiceSuscripcion, ServiceSuscripcion>();
 
@@ -42,6 +44,8 @@ public partial class App : Application
         services.AddTransient<AddClienteViewModel>();
         services.AddTransient<MembresiaViewModel>();
         services.AddTransient<CreateSuscripcionViewModel>();
+        services.AddTransient<ListSuscripcionViewModel>();
+        services.AddTransient<AsistenciaViewModel>();
         //services.AddTransient<LoginViewModel>();
 
 
