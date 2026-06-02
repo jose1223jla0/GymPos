@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 namespace GymPos.Repository;
 
 public interface IRepositorySuscripcion
@@ -27,21 +26,21 @@ public class RepositorySuscripcion : IRepositorySuscripcion
 
     public async Task AddSuscripcionAsync(Suscripcion suscripcion)
     {
+        suscripcion.Cancelada = false;
         await _context.Suscripciones.AddAsync(suscripcion);
         await _context.SaveChangesAsync();
     }
 
     public async Task<List<Suscripcion>> GetActivasByCliente(int clienteId)
     {
-        return await _context.Suscripciones
-            .Where(s => s.IdCliente == clienteId && s.EstadoSuscripcion == EstadoSuscripcion.Activa)
-            .ToListAsync();
+        var hoy = DateOnly.FromDateTime(DateTime.Now);
+        return await _context.Suscripciones.Where(s => s.IdCliente == clienteId && !s.Cancelada && s.FechaFin >= hoy).ToListAsync();
     }
     public async Task<IEnumerable<Suscripcion>> GetAllSuscripcion()
     {
         var listaSuscripcion = await _context.Suscripciones
                                     .Include(s => s.Membresia)
-                                    .Include(s=>s.Cliente).ToListAsync();
+                                    .Include(s => s.Cliente).ToListAsync();
         return listaSuscripcion;
     }
 
@@ -56,10 +55,10 @@ public class RepositorySuscripcion : IRepositorySuscripcion
 
     public async Task<List<Suscripcion>> GetSuscripcionesActivas()
     {
-        return await _context.Suscripciones
-            .Include(s => s.Cliente)
-            .Include(s => s.Membresia)
-            .Where(s => s.EstadoSuscripcion == EstadoSuscripcion.Activa)
-            .ToListAsync();
+        var suscripciones = await _context.Suscripciones
+                                  .Include(s => s.Cliente)
+                                  .Include(s => s.Membresia)
+                                  .ToListAsync();
+        return suscripciones.Where(s => s.Estado == EstadoSuscripcion.Activa).ToList();
     }
 }

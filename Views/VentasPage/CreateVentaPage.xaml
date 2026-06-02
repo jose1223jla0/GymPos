@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="GymPos.Views.VentasPage.CreateVentaPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GymPos.Views.VentasPage"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d">
+
+    <Grid>
+        <muxc:InfoBar x:Name="NotificationInfoBar"
+                      IsOpen="False"
+                      HorizontalAlignment="Stretch"
+                      Margin="0,8"
+                      IsClosable="True"
+                      Title=""
+                      Message=""
+                      Severity="Informational" />
+
+    </Grid>
+</Page>

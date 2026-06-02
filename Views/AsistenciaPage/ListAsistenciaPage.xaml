@@ -5,16 +5,29 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:GymPos.Views.AsistenciaPage"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:vm="using:GymPos.ViewModels.Asistencias"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Grid Padding="20">
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <AutoSuggestBox/>
+           
+        </StackPanel>
+
         <Border 
             CornerRadius="12"
             Padding="12"
+            Grid.Row="1"
             BorderBrush="{ThemeResource AccentAAFillColorSecondaryBrush}"
-            BorderThickness="0.5">
+            BorderThickness="1">
 
             <controls:DataGrid 
                 ItemsSource="{Binding SuscripcionesActivas}"
@@ -24,73 +37,87 @@
                 RowHeight="48"
                 GridLinesVisibility="Horizontal"
                 RowBackground="{ThemeResource AccentAAFillColorDisabled}">
-                
-
                 <controls:DataGrid.Columns>
 
-                    <!-- DNI -->
+                    <!--=======DNI========== -->
                     <controls:DataGridTextColumn 
                         Header="DNI"
                         FontSize="13"
-                        Binding="{Binding Cliente.Dni}"
+                        Binding="{Binding Suscripcion.Cliente.Dni}"
                         Width="110"/>
 
-                    <!-- NOMBRES -->
+                    <!--====== NOMBRES========= -->
                     <controls:DataGridTextColumn 
                         Header="Nombres"
                         FontSize="13"
-                        Binding="{Binding Cliente.Nombres}"
-                        Width="160"/>
+                        Binding="{Binding Suscripcion.Cliente.Nombres}"
+                        Width="140"/>
 
-                    <!-- APELLIDOS -->
+                    <!--======== APELLIDOS ========-->
                     <controls:DataGridTextColumn 
                         Header="Apellidos"
                         FontSize="13"
-                        Binding="{Binding Cliente.Apellidos}"
+                        Binding="{Binding Suscripcion.Cliente.Apellidos}"
                         Width="160"/>
 
-                    <!-- MEMBRESÍA -->
-                    <controls:DataGridTextColumn 
-                        Header="Membresía"
+                    <!--======== INICIO ========-->
+                    <controls:DataGridTextColumn
+                        Header="Fecha Inicio"
                         FontSize="13"
-                        Binding="{Binding Membresia.Nombre}"
-                        Width="150"/>
+                        Binding="{Binding Suscripcion.FechaInicio}"
+                        Width="120"/>
 
-            <!--
-                    <controls:DataGridTemplateColumn Header="Estado" Width="100">
+                    <!--======== SESIONES ASISTIDAS ========-->
+                    <controls:DataGridTextColumn
+                        Header="Asistencia"
+                        FontSize="13"
+                        Binding="{Binding TotalSesiones}"
+                        Width="100"/>
+                    <!--======== SESIONES ========-->
+                    <controls:DataGridTextColumn
+                         Header="Sesiones"
+                         FontSize="13"
+                         Binding="{Binding Sesiones}"
+                         Width="100"/>
+                    <!--======== FIN ========-->
+                    <controls:DataGridTextColumn
+                        Header="Fecha Fin"
+                        FontSize="13"
+                        Binding="{Binding Suscripcion.FechaFin}"
+                        Width="120"/>
+
+                    <controls:DataGridTemplateColumn Header="Acción" Width="150">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Activa"
-                                       Foreground="Green"
-                                       FontWeight="SemiBold"
-                                       HorizontalAlignment="Center"/>
-                            </DataTemplate>
-                        </controls:DataGridTemplateColumn.CellTemplate>
-                    </controls:DataGridTemplateColumn>-->
-
-                    <!-- ACCIÓN -->
-                    <controls:DataGridTemplateColumn 
-                        Header="Acción" 
-                        Width="130">
-                        <controls:DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-
-                                <Button Content="Asistencia"
-                                    Background="{ThemeResource AccentAcrylicInAppFillColorDefaultBrush}"
-                                    HorizontalAlignment="Center"
-                                    Padding="8,4"
-                                    Command="{Binding DataContext.RegistrarAsistenciaCommand, ElementName=SuscripcionesPage}"
-                                    CommandParameter="{Binding IdSuscripcion}"/>
-
+                                <Button 
+                                    Click="Button_Click"
+                                    IsEnabled="{Binding AsistioHoy, Converter={StaticResource InvertedBooleanConverter}}"
+                                    Background="{ThemeResource AccentAAFillColorTertiaryBrush}">
+                                    <StackPanel 
+                                        Orientation="Horizontal" 
+                                        Spacing="8" 
+                                        HorizontalAlignment="Center">
+                                        <FontIcon Glyph="&#xE74E;" Foreground="{ThemeResource FocusVisualWhiteStrokeThemeBrush}" />
+                                        <TextBlock Text="{Binding AsistioHoy, Converter={StaticResource AsistenciaTextConverter}}"
+                                                   Foreground="{ThemeResource FocusVisualWhiteStrokeThemeBrush}"/>
+                                    </StackPanel>
+                                </Button>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
-
                 </controls:DataGrid.Columns>
-
             </controls:DataGrid>
-
         </Border>
 
+        <muxc:InfoBar 
+            x:Name="NotificationInfoBar"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Right"
+            IsOpen="False"
+            Margin="0,12,0,0"
+            IsClosable="True"
+            Title=""
+            Message=""
+            Severity="Informational" />
     </Grid>
 </Page>

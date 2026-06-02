@@ -1,7 +1,12 @@
 using GymPos.Views;
 using GymPos.Views.AsistenciaPage;
+using GymPos.Views.CajaPage;
+using GymPos.Views.ClientesPage;
 using GymPos.Views.MembresiaPage;
+using GymPos.Views.ProductoPage;
 using GymPos.Views.SuscripcionPage;
+using GymPos.Views.UsuarioPage;
+using GymPos.Views.VentasPage;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 namespace GymPos;
@@ -12,7 +17,6 @@ public sealed partial class MainWindow : Window
     {
         InitializeComponent();
     }
-
     private void nvSample_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         if (args.SelectedItemContainer == null)
@@ -29,7 +33,7 @@ public sealed partial class MainWindow : Window
                 break;
 
             case "SamplePage2":
-                contentFrame.Navigate(typeof(ClientePage));
+                contentFrame.Navigate(typeof(ListClientePage));
                 break;
 
             case "SamplePage3":
@@ -37,11 +41,28 @@ public sealed partial class MainWindow : Window
                 break;
 
             case "SamplePage4":
-                contentFrame.Navigate(typeof(MembresiaListPage));
+                contentFrame.Navigate(typeof(MembresiaPage));
                 break;
 
             case "SamplePage5":
                 contentFrame.Navigate(typeof(ListAsistenciaPage));
+                break;
+
+            case "SamplePage6":
+                contentFrame.Navigate(typeof(ResumenCajaPage));
+                break;
+
+            case "SamplePage7":
+                contentFrame.Navigate(typeof(ListVentasPage));
+                break;
+
+            case "SamplePage8":
+                contentFrame.Navigate(typeof(ListProductoPage));
+                break;
+
+
+            case "SamplePage9":
+                contentFrame.Navigate(typeof(ListUsuarioPage));
                 break;
         }
     }

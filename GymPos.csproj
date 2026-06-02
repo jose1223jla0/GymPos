@@ -14,15 +14,29 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\register.jpg" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Views\AsistenciaPage\ListAsistenciaPage.xaml" />
-    <None Remove="Views\ClientePage.xaml" />
-    <None Remove="Views\ClientesPage\AddClientePage.xaml" />
+    <None Remove="Views\CajaPage\ResumenCajaPage.xaml" />
+    <None Remove="Views\ClientesPage\CreateClientePage.xaml" />
+    <None Remove="Views\ClientesPage\EditClientePage.xaml" />
+    <None Remove="Views\ClientesPage\ListClientePage.xaml" />
+    <None Remove="Views\Controls\UserControlNotification.xaml" />
     <None Remove="Views\DashboardPage.xaml" />
     <None Remove="Views\InicioPage.xaml" />
     <None Remove="Views\LoginPage.xaml" />
-    <None Remove="Views\MembresiaPage\MembresiaListPage.xaml" />
+    <None Remove="Views\MembresiaPage\MembresiaPage.xaml" />
+    <None Remove="Views\ProductoPage\EditProductoPage.xaml" />
+    <None Remove="Views\ProductoPage\ListProductoPage.xaml" />
     <None Remove="Views\SuscripcionPage\CreateSuscripcionPage.xaml" />
     <None Remove="Views\SuscripcionPage\ListSuscripcionPage.xaml" />
+    <None Remove="Views\UsuarioPage\ListUsuarioPage.xaml" />
+    <None Remove="Views\VentasPage\CreateVentaPage.xaml" />
+    <None Remove="Views\VentasPage\ListVentasPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="Views\LoginWindow.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -58,12 +72,22 @@
     <PackageReference Include="WinUI.TableView" Version="1.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\SuscripcionPage\ListSuscripcionPage.xaml">
+    <Page Update="Views\ClientesPage\CreateClientePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\ClientesPage\AddClientePage.xaml">
+    <Page Update="Views\ClientesPage\EditClientePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\ClientesPage\ListClientePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SuscripcionPage\ListSuscripcionPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -83,12 +107,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\ClientePage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Views\MembresiaPage\MembresiaListPage.xaml">
+    <Page Update="Views\MembresiaPage\ListMembresiaPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -99,6 +118,50 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\AsistenciaPage\ListAsistenciaPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Controls\UserControlNotification.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\ProductoPage\ListProductoPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\VentasPage\ListVentasPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Dto\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Views\LoginWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <Page Update="Views\UsuarioPage\ListUsuarioPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\ProductoPage\EditProductoPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\MembresiaPage\MembresiaPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\VentasPage\CreateVentaPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\CajaPage\ResumenCajaPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

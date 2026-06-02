@@ -10,6 +10,7 @@ public interface IRepositoryMembresia
 {
     Task<IEnumerable<Membresia>> GetAllAsync();
     Task<Membresia?> GetById(int id);
+    Task UpdateAsync(Membresia membresia);
 }
 public class RepositoryMembresia : IRepositoryMembresia
 {
@@ -27,5 +28,17 @@ public class RepositoryMembresia : IRepositoryMembresia
     public async Task<Membresia?> GetById(int id)
     {
         return await _context.Membresias.FindAsync(id);
+    }
+
+    public async Task UpdateAsync(Membresia membresia)
+    {
+        var nuevaMembresia = new Membresia
+        {
+            IdMembresia = membresia.IdMembresia,
+            Nombre = membresia.Nombre,
+            Sesiones = membresia.Sesiones
+        };
+        _context.Membresias.Update(nuevaMembresia);
+        await _context.SaveChangesAsync();
     }
 }

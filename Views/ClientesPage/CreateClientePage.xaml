@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="GymPos.Views.ClientesPage.CreateClientePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GymPos.Views.ClientesPage"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel Spacing="5">
+            <!-- HEADER -->
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <Border
+                    Width="44"
+                    Height="44"
+                    CornerRadius="22"
+                    Background="#4F46E5">
+                    <FontIcon
+                        Glyph="&#xE77B;"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel>
+                    <TextBlock
+                        Text="Nuevo Cliente"
+                        FontSize="20"
+                        FontWeight="SemiBold"/>
+                    <TextBlock
+                        Text="Registrar cliente en el sistema"
+                        Opacity="0.6"
+                        FontSize="12"/>
+                </StackPanel>
+            </StackPanel>
+            <!-- INFOBAR -->
+            <InfoBar
+                IsOpen="{Binding HasError}"
+                Severity="Error"
+                Title="Error"
+                Message="{Binding ErrorMessage}"
+                IsClosable="True"/>
+            <!-- DNI -->
+            
+            <StackPanel Spacing="2">
+                <TextBlock Text="DNI" FontWeight="SemiBold"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="42"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border 
+                        CornerRadius="10,0,0,10">
+                        <FontIcon 
+                            Glyph="&#xE8D2;"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBox
+                        Grid.Column="1"
+                        Text="{Binding DniCliente, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        PlaceholderText="Ingrese DNI"
+                        MaxLength="8"
+                        Height="40"/>
+                </Grid>
+                <TextBlock
+                    Text="{Binding DniError }"
+                    Foreground="Tomato"
+                    FontSize="12"/>
+            </StackPanel>
+            
+            <!-- NOMBRES -->
+            <StackPanel Spacing="2">
+                <TextBlock 
+                    Text="Nombres " 
+                    FontWeight="SemiBold"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="42"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border 
+                        CornerRadius="10,0,0,10">
+                        <FontIcon 
+                            Glyph="&#xE77B;"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBox
+                        Grid.Column="1"
+                        Text="{Binding NombreCliente, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        PlaceholderText="Ingrese nombres"
+                        Height="40"/>
+                </Grid>
+                <TextBlock
+                    Text="{Binding NombreError}"
+                    Foreground="Tomato"
+                    FontSize="12"/>
+            </StackPanel>
+            
+            
+            <!-- APELLIDOS -->
+            <StackPanel Spacing="2">
+                <TextBlock 
+                    Text="Apellidos" 
+                    FontWeight="SemiBold"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="42"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border 
+                        CornerRadius="10,0,0,10">
+                        <FontIcon 
+                            Glyph="&#xE13D;"
+                            VerticalAlignment="Center"/>
+                    </Border>
+
+                    <TextBox
+                        Grid.Column="1"
+                        Text="{Binding ApellidoCliente, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        PlaceholderText="Ingrese apellidos"
+                        Height="40"/>
+                </Grid>
+                <TextBlock
+                    Text="{Binding ApellidoError}"
+                    Foreground="Tomato"
+                    FontSize="12"/>
+            </StackPanel>
+            
+            <!-- LOADING -->
+            <StackPanel
+                Orientation="Horizontal"
+                Spacing="8"
+                HorizontalAlignment="Center"
+                Visibility="{Binding IsLoading}">
+                <ProgressRing
+                    IsActive="{Binding IsLoading}"
+                    Width="20"
+                    Height="20"/>
+                <TextBlock
+                    Text="Guardando..."
+                    VerticalAlignment="Center"
+                    Opacity="0.7"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -13,9 +13,4 @@ public class Cliente
     public required string Apellidos { get; set; } 
     //relaciones
     public List<Suscripcion> Suscripciones { get; set; } = new List<Suscripcion>();
-
-    public static implicit operator int(Cliente v)
-    {
-        throw new NotImplementedException();
-    }
 }

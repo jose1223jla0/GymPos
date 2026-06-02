@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:GymPos.Views.SuscripcionPage"
     xmlns:conv="using:GymPos.Converters"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:tv="using:WinUI.TableView"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -15,6 +16,8 @@
     </Page.Resources>
 
     <Grid Margin="20" RowSpacing="10">
+
+
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -27,7 +30,7 @@
                        HorizontalAlignment="Center"
                        FontSize="16"/>
         </StackPanel>
-        
+
         <!-- TABLEVIEW -->
         <tv:TableView
             x:Name="RootTable"
@@ -41,11 +44,6 @@
             SelectionMode="Single">
 
             <tv:TableView.Columns>
-
-                <tv:TableViewTextColumn
-                    Header="Id"
-                    Width="60"
-                    Binding="{Binding IdSuscripcion}" />
 
                 <tv:TableViewTextColumn
                     Width="150"
@@ -72,18 +70,25 @@
                     Width="120"
                     Binding="{Binding FechaFin}" />
 
+                <tv:TableViewTextColumn
+                    Header="Precio"
+                    Width="120"
+                    Binding="{Binding Membresia.Precio, Converter={StaticResource PrecioConverter}}" />
+
                 <tv:TableViewTemplateColumn 
                     Header="Estado"
                     Width="120">
                     <tv:TableViewTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Border Padding="10,2"
-                                    CornerRadius="10"
-                                    Background="{Binding EstadoSuscripcion, Converter={StaticResource EstadoToColorConverter}}"
-                                    HorizontalAlignment="Center">
-                                <TextBlock Text="{Binding EstadoSuscripcion}"
-                                           Foreground="White"
-                                           FontWeight="SemiBold"/>
+                            <Border 
+                                Padding="10,2"
+                                CornerRadius="10"
+                                Background="{Binding Estado, Converter={StaticResource EstadoToColorConverter}}"
+                                HorizontalAlignment="Center">
+                                <TextBlock 
+                                    Text="{Binding Estado}"
+                                    Foreground="White"
+                                    FontWeight="SemiBold"/>
                             </Border>
                         </DataTemplate>
                     </tv:TableViewTemplateColumn.CellTemplate>
@@ -95,18 +100,20 @@
 
                     <tv:TableViewTemplateColumn.CellTemplate>
                         <DataTemplate>
-
                             <StackPanel Orientation="Horizontal" Spacing="10">
 
-                                <!-- EDITAR -->
-                                <Button Background="Transparent"
-                                        Command="{Binding DataContext.EditCommand, ElementName=RootTable}"
-                                        CommandParameter="{Binding}" >
-                                    <FontIcon Glyph="&#xE70F;" Foreground="Red" 
-                                          FontSize="15"/>
+                                <!--EDITAR-->
+                                <Button 
+                                    Background="Transparent"
+                                    Command="{Binding DataContext.EditCommand, ElementName=RootTable}"
+                                    CommandParameter="{Binding}" >
+                                    <FontIcon 
+                                        Glyph="&#xE70F;" 
+                                        Foreground="Red" 
+                                        FontSize="15"/>
                                 </Button>
 
-                                <!-- ELIMINAR -->
+                                <!--ELIMINAR-->
                                 <Button Background="Transparent"
                                         Command="{Binding DataContext.DeleteCommand, ElementName=RootTable}"
                                         CommandParameter="{Binding}">
@@ -149,5 +156,17 @@
                 </Style>
             </ContentDialog.CloseButtonStyle>
         </ContentDialog>-->
+
+        <muxc:InfoBar x:Name="NotificationInfoBar"
+              Grid.Row="0"
+              VerticalAlignment="Bottom"
+                      HorizontalAlignment="Right"
+              IsOpen="False"
+              Margin="0,12,0,0"
+              IsClosable="True"
+              Title=""
+              Message=""
+              Severity="Informational" />
     </Grid>
+
 </Page>

@@ -24,21 +24,28 @@ public class ServiceCliente : IServiceCliente
     }
     public async Task RegistrarClienteConSuscripcion(Cliente cliente, int idMembresia)
     {
-        await _repoCliente.AddCliente(cliente);
-        var membresia = await _repoMembresia.GetById(idMembresia);
-        if (membresia == null)
-        {
-            throw new Exception("Membresia no econtrada");
-        }
-        var fechaInicio = DateOnly.FromDateTime(DateTime.Now);
-        var suscripcion = new Suscripcion
-        {
-            IdCliente = cliente.IdCliente,
-            IdMembresia = idMembresia,
-            FechaInicio = fechaInicio,
-            FechaFin = fechaInicio.AddDays(membresia.Sesiones),
-            EstadoSuscripcion = EstadoSuscripcion.Activa
-        };
-        await _repoSuscripcion.AddSuscripcionAsync(suscripcion);
+        //try
+        //{
+        //    await _repoCliente.AddCliente(cliente);
+        //    var membresia = await _repoMembresia.GetById(idMembresia);
+        //    if (membresia == null)
+        //    {
+        //        throw new Exception("Membresía no encontrada");
+        //    }
+        //    var fechaInicio = DateOnly.FromDateTime(DateTime.Now);
+        //    var suscripcion = new Suscripcion
+        //    {
+        //        IdCliente = cliente.IdCliente,
+        //        IdMembresia = idMembresia,
+        //        FechaInicio = fechaInicio,
+        //        FechaFin = fechaInicio.AddDays(membresia.Sesiones),
+        //        Estado = EstadoSuscripcion.Activa
+        //    };
+        //    await _repoSuscripcion.AddSuscripcionAsync(suscripcion);
+        //}
+        //catch (Exception ex)
+        //{
+        //    throw new Exception($"Error al registrar cliente con suscripción: {ex.Message}");
+        //}
     }
 }

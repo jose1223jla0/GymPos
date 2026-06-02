@@ -4,99 +4,300 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:GymPos.Views.SuscripcionPage"
+    xmlns:conv="using:GymPos.Converters"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mod="using:GymPos.Models"
-    xmlns:vm="CreateSuscripcionViewModel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <conv:BoolToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
+    </Page.Resources>
+
     <Grid Padding="30">
-        <StackPanel Spacing="18">
-            <!-- HEADER -->
-            <TextBlock Text="Crear Suscripción"
-                       FontSize="28"
-                       FontWeight="Bold"/>
 
-            <!-- CLIENTE -->
-            <!--<StackPanel>
-                <TextBlock Text="Cliente" FontWeight="SemiBold"/>
+        <!-- CARD PRINCIPAL -->
+        <Border
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            CornerRadius="20"
+            Padding="25">
+            <Border.Shadow>
+                <ThemeShadow/>
+            </Border.Shadow>
 
-                <ComboBox x:Name="cmbClientes"
-                          PlaceholderText="Selecciona un cliente"/>
-            </StackPanel>-->
-            <StackPanel>
-                <TextBlock Text="Buscar cliente" Foreground="#777"/>
-                <AutoSuggestBox
-                    Text="{x:Bind ViewModel.Dni, Mode=TwoWay}"
-                    ItemsSource="{x:Bind ViewModel.ClientesSugeridos}"
-                    TextChanged="AutoSuggestBox_TextChanged"
-                    SuggestionChosen="AutoSuggestBox_SuggestionChosen"
-                    DisplayMemberPath="Dni">
+            <Grid ColumnSpacing="30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.2*"/>
+                    <ColumnDefinition Width="1.8*"/>
+                </Grid.ColumnDefinitions>
 
-                    <AutoSuggestBox.QueryIcon>
-                        <SymbolIcon Symbol="Find"/>
-                    </AutoSuggestBox.QueryIcon>
-             
+                <!-- ══════════════════ IZQUIERDA (IMAGEN / INFO) ══════════════════ -->
+                <Border
+                    CornerRadius="16"
+                    Padding="10"
+                    BorderThickness="1"
+                    BorderBrush="{ThemeResource AccentAAFillColorDefaultBrush}"
+                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Spacing="16">
+                        <StackPanel HorizontalAlignment="Center" Spacing="20">
+                            <FontIcon
+                                Glyph="&#xE8FA;"
+                                FontSize="60"
+                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock
+                                Text="Registro de Nueva Suscripción"
+                                FontSize="20"
+                                FontWeight="Bold"
+                                TextAlignment="Center"/>
+                            <TextBlock
+                                TextWrapping="Wrap"
+                                TextAlignment="Center"
+                                MaxWidth="300">
+                                Gestiona de manera rápida y sencilla la inscripción de tus clientes.
+                                <LineBreak/>
+                                Busca al cliente mediante su DNI, selecciona el período de acceso y asigna la membresía adecuada.
+                            </TextBlock>
+                            <TextBlock
+                                Text="Asegúrate de verificar la información antes de confirmar la suscripción para evitar errores en el acceso o facturación."
+                                FontSize="12"
+                                Foreground="#6B7280"
+                                TextAlignment="Center"
+                                TextWrapping="Wrap"
+                                MaxWidth="300"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
 
-                </AutoSuggestBox>
-            </StackPanel>
+                <!-- ══════════════════ DERECHA (FORMULARIO) ══════════════════ -->
+                <Border
+                    Grid.Column="1"
+                    CornerRadius="16"
+                    BorderThickness="1"
+                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource AccentAAFillColorDefaultBrush}">
 
-            <TextBlock Text="{x:Bind ViewModel.ClienteSeleccionado.Nombres, Mode=TwoWay}"
-                       FontSize="16"
-                       FontWeight="SemiBold"/>
+                    <StackPanel Margin="30" Spacing="20">
 
-            <StackPanel Orientation="Horizontal" Spacing="200">
-                <StackPanel>
-                    <TextBlock Text="Fecha de Inicio" Foreground="#777"/>
-                    <CalendarDatePicker PlaceholderText="Seleccione una Fecha"/>
-                </StackPanel>
-                <StackPanel>
-                    <TextBlock Text="Fecha final" Foreground="#777"/>
-                    <CalendarDatePicker PlaceholderText="Seleccione una Fecha"/>
-                </StackPanel>
-            </StackPanel>
+                        <!-- ── HEADER ─────────────────────────────────────── -->
+                        <TextBlock
+                            Text="Crear nueva Suscripción"
+                            HorizontalAlignment="Center"
+                            FontSize="26"
+                            FontWeight="SemiBold"/>
 
-            <!-- MEMBRESÍA SELECCIONADA -->
-            <Border Padding="15"
-                    CornerRadius="12"
-                    Background="#1F2937">
+                        <!-- ── BUSCADOR ────────────────────────────────────── -->
+                        <StackPanel Spacing="6">
+                            <TextBlock
+                                Text="Buscar Cliente por DNI, nombre o apellido"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                FontSize="13"/>
 
-                <StackPanel>
-                    <TextBlock Text="Membresía seleccionada"
-                               Foreground="#9CA3AF"/>
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-                    <TextBlock
-                        Text="{x:Bind ViewModel.MembresiaSeleccionada.Nombre, Mode=OneWay, FallbackValue='Sin seleccionar'}"
-                        FontSize="20"
-                        FontWeight="Bold"
-                        Foreground="White"/>
-                </StackPanel>
+                                <!--
+                                    AutoSuggestBox:
+                                    - x:Name="BuscadorDni"  → referenciado en code-behind
+                                    - ItemsSource se asigna desde code-behind tras la búsqueda
+                                    - DisplayMemberPath muestra "Apellidos, Nombres (DNI)" en la lista
+                                -->
+                                <AutoSuggestBox
+                                    x:Name="BuscadorDni"
+                                    Grid.Column="0"
+                                    PlaceholderText="Escribe DNI, nombre o apellido…"
+                                    CornerRadius="8"
+                                    Text="{x:Bind ViewModel.TextoBusqueda, Mode=TwoWay}"
+                                    TextChanged="BuscadorDni_TextChanged"
+                                    SuggestionChosen="BuscadorDni_SuggestionChosen"
+                                    QuerySubmitted="BuscadorDni_QuerySubmitted">
 
-            </Border>
+                                    <AutoSuggestBox.QueryIcon>
+                                        <SymbolIcon Symbol="Find"/>
+                                    </AutoSuggestBox.QueryIcon>
 
+                                    <!-- Plantilla de cada fila de sugerencia -->
+                                    <AutoSuggestBox.ItemTemplate>
+                                        <DataTemplate x:DataType="mod:Cliente">
+                                            <Grid ColumnSpacing="10" Padding="4,6">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
 
+                                                <FontIcon
+                                                    Glyph="&#xE77B;"
+                                                    FontSize="18"
+                                                    VerticalAlignment="Center"
+                                                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
 
-            <!-- INFO AUTOMÁTICA -->
-            <Border Padding="12"
-                    CornerRadius="10"
-                    Background="#F3F4F6">
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <!-- Apellidos + Nombres -->
+                                                    <TextBlock FontWeight="SemiBold">
+                                                        <Run Text="{x:Bind Apellidos}"/><Run Text=", "/><Run Text="{x:Bind Nombres}"/>
+                                                    </TextBlock>
+                                                    <!-- DNI secundario -->
+                                                    <TextBlock
+                                                        Text="{x:Bind Dni}"
+                                                        FontSize="12"
+                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </AutoSuggestBox.ItemTemplate>
+                                </AutoSuggestBox>
 
-                <StackPanel>
-                    <TextBlock Text="La suscripción se generará automáticamente:"/>
+                                <!-- Botón agregar nuevo cliente -->
+                                <Button
+                                    Grid.Column="1"
+                                    Command="{x:Bind ViewModel.AbrirFormularioCommand}"
+                                    Background="{ThemeResource AccentAAFillColorDefaultBrush}"
+                                    ToolTipService.ToolTip="Registrar nuevo cliente">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <SymbolIcon Symbol="Add"/>
+                                        <TextBlock Text="Nuevo" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
 
-                    <TextBlock x:Name="txtFechas"
-                               Foreground="#6B7280"/>
-                </StackPanel>
+                        <!-- ── CLIENTE SELECCIONADO ────────────────────────── -->
+                        <!--
+                            Se muestra únicamente cuando hay un cliente elegido.
+                            TieneClienteSeleccionado => bool, convertido a Visibility.
+                        -->
+                        <Border
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            CornerRadius="12"
+                            Padding="14"
+                            BorderThickness="1"
+                            BorderBrush="{ThemeResource AccentAAFillColorDefaultBrush}"
+                            Visibility="{x:Bind ViewModel.TieneClienteSeleccionado, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
 
-            </Border>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <!-- Botón quitar -->
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-            <!-- BOTÓN -->
-            <Button Content="Crear Suscripción"
-                    Click="Button_Click"
-                    Background="#2563EB"
-                    Foreground="White"
-                    Padding="20,10"
-                    CornerRadius="8"/>
+                                <FontIcon
+                                    Glyph="&#xE77B;"
+                                    FontSize="30"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
 
-        </StackPanel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                    <TextBlock FontWeight="SemiBold" FontSize="15">
+                                        <Run Text="{x:Bind ViewModel.ClienteSeleccionado.Apellidos, Mode=OneWay}"/>
+                                        <Run Text=", "/>
+                                        <Run Text="{x:Bind ViewModel.ClienteSeleccionado.Nombres, Mode=OneWay}"/>
+                                    </TextBlock>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <FontIcon Glyph="&#xE8EC;" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock
+                                            Text="{x:Bind ViewModel.ClienteSeleccionado.Dni, Mode=OneWay}"
+                                            FontSize="13"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Botón para quitar la selección -->
+                                <Button
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Background="{ThemeResource AccentAAFillColorDefaultBrush}"
+                                    ToolTipService.ToolTip="Quitar selección"
+                                    Click="QuitarClienteSeleccionado_Click">
+                                    <SymbolIcon Symbol="Cancel"/>
+                                </Button>
+                            </Grid>
+                        </Border>
+
+                        <!-- ── FECHAS ──────────────────────────────────────── -->
+                        <Grid ColumnSpacing="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Spacing="6">
+                                <TextBlock
+                                    Text="Fecha de Inicio"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <CalendarDatePicker CornerRadius="8" PlaceholderText="Seleccione"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock
+                                    Text="Fecha Final"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <CalendarDatePicker CornerRadius="8" PlaceholderText="Seleccione"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- ── MEMBRESÍA ───────────────────────────────────── -->
+                        <Border
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            CornerRadius="12"
+                            BorderThickness="1"
+                            BorderBrush="{ThemeResource AccentAAFillColorDefaultBrush}"
+                            Padding="15">
+                            <StackPanel Spacing="4">
+                                <TextBlock
+                                    Text="Membresía seleccionada"
+                                    FontSize="12"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock
+                                    Text="{x:Bind ViewModel.MembresiaSeleccionado.Nombre, Mode=OneWay, FallbackValue='Sin seleccionar'}"
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ── ERROR ──────────────────────────────────────── -->
+                        <TextBlock
+                            Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
+                            Foreground="{ThemeResource MediaErrorBackgroundThemeBrush}"
+                            TextWrapping="Wrap"
+                            FontSize="12"
+                            Visibility="{x:Bind ViewModel.ErrorMessage, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}"/>
+
+                        <!-- ── BOTÓN GUARDAR ───────────────────────────────── -->
+                        <Button
+                            x:Name="BtnCrearSuscripcion"
+                            Click="BtnCrearSuscripcion_Click"
+                            Height="45"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Stretch"
+                            CornerRadius="12"
+                            Background="{ThemeResource AccentAAFillColorDefaultBrush}"
+                            IsEnabled="{x:Bind ViewModel.TieneClienteSeleccionado, Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                <FontIcon Glyph="&#xE710;"/>
+                                <TextBlock Text="Crear Suscripción"/>
+                            </StackPanel>
+                        </Button>
+
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+        <muxc:InfoBar x:Name="NotificationInfoBar"
+                      IsOpen="False"
+                      Margin="0,12,0,0"
+                      IsClosable="True"
+                      Title=""
+                      Message=""
+                      Severity="Informational" />
     </Grid>
 </Page>

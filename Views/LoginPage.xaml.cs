@@ -30,39 +30,108 @@ public sealed partial class LoginPage : Page
         InitializeComponent();
     }
 
+    //// Evento que notifica que el login fue exitoso
+    public event EventHandler? LoginSucceeded;
 
-    private async void Button_Click(object sender, RoutedEventArgs e)
+
+    //private async void Button_Click(object sender, RoutedEventArgs e)
+    //{
+    //    var user = UserTextBox.Text;
+    //    var pass = PasswordBox.Password;
+
+    //    if (user == "admin" && pass == "1234")
+    //    {
+    //        ShowInfo("Login correcto", "Bienvenido al sistema", InfoBarSeverity.Success);
+    //        await Task.Delay(1000);
+
+    //        // Notificar al contenedor (ventana de login) que el login fue correcto
+    //        AlertBar.IsOpen = false;
+    //        LoginSucceeded?.Invoke(this, EventArgs.Empty);
+    //    }
+    //    else
+    //    {
+    //        ShowInfo("Error", "Credenciales incorrectas", InfoBarSeverity.Error);
+
+    //        await Task.Delay(1000);
+    //        AlertBar.IsOpen = false;
+    //    }
+    //}
+
+    //private void ShowInfo(string title, string message, InfoBarSeverity severity)
+    //{
+    //    AlertBar.Title = title;
+    //    AlertBar.Message = message;
+    //    AlertBar.Severity = severity;
+    //    AlertBar.IsOpen = true;
+    //}
+
+    //private void Hyperlink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
+    //{
+
+    //}
+    private void Button_Click(object sender, RoutedEventArgs e)
     {
-        var user = UserTextBox.Text;
-        var pass = PasswordBox.Password;
+        ValidarLogin();
+    }
 
-        if (user == "admin" && pass == "1234")
+    private void PasswordBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key == Windows.System.VirtualKey.Enter)
+            ValidarLogin();
+    }
+
+    private void UserTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key == Windows.System.VirtualKey.Enter)
+            ValidarLogin();
+    }
+
+    private void ValidarLogin()
+    {
+        string usuario = UserTextBox.Text.Trim();
+        string password = PasswordBox.Password;
+
+        if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(password))
         {
-            ShowInfo("Login correcto", "Bienvenido al sistema", InfoBarSeverity.Success);
-            await Task.Delay(1000);
+            AlertBar.Title = "Campos requeridos";
+            AlertBar.Message = "Por favor ingresa tu usuario y contraseña.";
+            AlertBar.Severity = InfoBarSeverity.Warning;
+            AlertBar.IsOpen = true;
+            return;
+        }
 
-            Frame.Navigate(typeof(MainWindow));
+        // ─────────────────────────────────────────────
+        // TODO: Reemplaza con tu lógica real de autenticación
+        // ─────────────────────────────────────────────
+        bool credencialesValidas = usuario == "admin" && password == "1234";
+
+        if (credencialesValidas)
+        {
             AlertBar.IsOpen = false;
+            // Notificar al contenedor (ventana de login) que el login fue correcto
+            LoginSucceeded?.Invoke(this, EventArgs.Empty);
         }
         else
         {
-            ShowInfo("Error", "Credenciales incorrectas", InfoBarSeverity.Error);
-
-            await Task.Delay(1000);
-            AlertBar.IsOpen = false;
+            AlertBar.Title = "Acceso denegado";
+            AlertBar.Message = "Usuario o contraseña incorrectos. Intenta nuevamente.";
+            AlertBar.Severity = InfoBarSeverity.Error;
+            AlertBar.IsOpen = true;
+            PasswordBox.Password = string.Empty;
+            PasswordBox.Focus(FocusState.Programmatic);
         }
     }
 
-    private void ShowInfo(string title, string message, InfoBarSeverity severity)
+    private async void Hyperlink_Click(object sender, RoutedEventArgs e)
     {
-        AlertBar.Title = title;
-        AlertBar.Message = message;
-        AlertBar.Severity = severity;
-        AlertBar.IsOpen = true;
+        var dialog = new ContentDialog
+        {
+            Title = "Recuperar contraseña",
+            Content = "Contacta al administrador del sistema para restablecer tu contraseña.",
+            CloseButtonText = "Entendido",
+            XamlRoot = XamlRoot
+        };
+        await dialog.ShowAsync();
     }
 
-    private void Hyperlink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
-    {
-
-    }
 }

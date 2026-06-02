@@ -39,8 +39,11 @@ public class RepositoryAsistencia : IRepositoryAsistencia
 
     public async Task<IEnumerable<Asistencia>> GetAllAsistenciaAsync()
     {
-        return await _context.Asistencias.ToListAsync();
+        var listaAsistencia = await _context.Asistencias
+                                .Include(a => a.Suscripcion).ToListAsync();
+        return listaAsistencia;
     }
+
     public async Task AddAsistenciaAsync(Asistencia asistencia)
     {
         _context.Asistencias.Add(asistencia);
