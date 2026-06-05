@@ -47,7 +47,11 @@ public partial class App : Application
         services.AddSingleton<ICajaEventService, CajaEventService>();
         services.AddDbContext<GymPosContext>(options =>
         {
-            options.UseSqlServer("Server=localhost;Database=GymDb1;Trusted_Connection=True;TrustServerCertificate=True;");
+            var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var dir = System.IO.Path.Combine(folder, "GymPos");
+            System.IO.Directory.CreateDirectory(dir);
+            var dbPath = System.IO.Path.Combine(dir, "gympos.db");
+            options.UseSqlite($"Data Source={dbPath}");
         });
         // Repository
         services.AddTransient<IRepositoryCliente, RepositoryCliente>();
@@ -98,6 +102,7 @@ public partial class App : Application
         using (var scope = Services!.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<GymPosContext>();
+            context.Database.EnsureCreated();
 
             if (!context.Usuarios.Any(u => u.Rol == Rol.SuperAdmin))
             {
@@ -111,7 +116,6 @@ public partial class App : Application
                     Rol = Rol.SuperAdmin
                 });
             }
-            // Seed de categorías predefinidas para gimnasio
             var categoriasPredefinidas = new[]
             {
                 "Suplementos",

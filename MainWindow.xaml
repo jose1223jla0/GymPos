@@ -93,7 +93,6 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-
             </NavigationView.MenuItems>
             <Frame x:Name="contentFrame"/>
             <NavigationView.PaneFooter>

@@ -28,7 +28,7 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
             <Border.Background>
-                <AcrylicBrush TintColor="#34A361" TintOpacity="0.85" />
+                <AcrylicBrush TintColor="#0A313D" TintOpacity="0.85" />
             </Border.Background>
             <Border.Shadow>
                 <ThemeShadow/>
