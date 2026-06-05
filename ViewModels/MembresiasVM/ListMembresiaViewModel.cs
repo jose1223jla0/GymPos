@@ -1,43 +1,69 @@
-﻿using GymPos.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using GymPos.Models;
 using GymPos.Repository;
+using GymPos.Services;
+using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace GymPos.ViewModels.MembresiasVM;
 
-public partial class ListMembresiaViewModel : INotifyPropertyChanged
+public partial class ListMembresiaViewModel : ObservableObject
 {
     private readonly IRepositoryMembresia _repositoryMembresia;
+    private readonly INotificationService _notificationService;
+
     public ObservableCollection<Membresia> MembresiaList { get; } = new();
-    public ListMembresiaViewModel(IRepositoryMembresia repositoryMembresia)
+
+    public event Action<Membresia>? OpenEditDialogRequest;
+    public event Action? OpenAddDialogRequest;
+
+    [ObservableProperty]
+    private bool isLoading = false;
+
+    public ListMembresiaViewModel(
+        IRepositoryMembresia repositoryMembresia,
+        INotificationService notificationService)
     {
         _repositoryMembresia = repositoryMembresia;
+        _notificationService = notificationService;
     }
 
     public async Task InitAsync()
     {
         await LoadMembresias();
     }
-    /// <summary>
-    /// Carga las membresías desde el repositorio y actualiza MembresiaList.
-    /// </summary>
-    private async Task LoadMembresias()
+
+    public async Task LoadMembresias()
     {
-        var lista = await _repositoryMembresia.GetAllAsync();
-        MembresiaList.Clear();
-        foreach (var item in lista)
+        try
         {
-            MembresiaList.Add(item);
+            IsLoading = true;
+            var lista = await _repositoryMembresia.GetAllAsync();
+            MembresiaList.Clear();
+            foreach (var item in lista)
+                MembresiaList.Add(item);
+        }
+        catch (Exception ex)
+        {
+            _notificationService.ShowError("Error", $"No se pudieron cargar las membresías: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
-    // ── INotifyPropertyChanged ────────────────────────────────────────────────
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    [RelayCommand]
+    private void Edit(Membresia membresia)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        OpenEditDialogRequest?.Invoke(membresia);
+    }
+
+    [RelayCommand]
+    private void Add()
+    {
+        OpenAddDialogRequest?.Invoke();
     }
 }

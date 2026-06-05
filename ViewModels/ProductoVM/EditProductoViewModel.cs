@@ -1,126 +1,147 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using GymPos.Models;
 using GymPos.Repository;
+using GymPos.Services;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace GymPos.ViewModels.ProductoVM;
 
-public partial class EditProductoViewModel : INotifyPropertyChanged
+public partial class EditProductoViewModel : ObservableObject
 {
-    public ObservableCollection<Producto> ListProductos { get; } = new();
     private readonly IRepositoryProducto _repositoryProducto;
-    private int _idProducto;
-    private int _idCategoria;
-    private string _nombreProducto = string.Empty;
-    private int _stockProducto;
-    private decimal _precioProducto;
-    private bool _estadoProducto;
-    public int IdProducto
+    private readonly IRepositoryCategoria _repositoryCategoria;
+    private readonly INotificationService _notificationService;
+
+    public ObservableCollection<Categoria> Categorias { get; } = new();
+
+    [ObservableProperty] private int idProducto;
+    [ObservableProperty] private string nombreProducto = string.Empty;
+    [ObservableProperty] private int stockProducto;
+    [ObservableProperty]
+    private decimal precioProducto;
+
+    public double PrecioProductoDouble
     {
-        get => _idProducto;
-        set
-        {
-            if (_idProducto != value)
-            {
-                _idProducto = value;
-                OnPropertyChanged(nameof(IdProducto));
-            }
-        }
+        get => (double)PrecioProducto;
+        set => PrecioProducto = (decimal)value;
     }
-    public int IdCategoria
+
+    partial void OnPrecioProductoChanged(decimal value)
     {
-        get => _idCategoria;
-        set
-        {
-            if (_idCategoria != value)
-            {
-                _idCategoria = value;
-                OnPropertyChanged(nameof(IdCategoria));
-            }
-        }
+        OnPropertyChanged(nameof(PrecioProductoDouble));
     }
-    public string NombreProducto
-    {
-        get => _nombreProducto;
-        set
-        {
-            if (_nombreProducto != value)
-            {
-                _nombreProducto = value;
-                OnPropertyChanged(nameof(NombreProducto));
-            }
-        }
-    }
-    public int StockProducto
-    {
-        get => _stockProducto;
-        set
-        {
-            if (_stockProducto != value)
-            {
-                _stockProducto = value;
-                OnPropertyChanged(nameof(StockProducto));
-            }
-        }
-    }
-    public decimal PrecioProducto
-    {
-        get => _precioProducto;
-        set
-        {
-            if (_precioProducto != value)
-            {
-                _precioProducto = value;
-                OnPropertyChanged(nameof(PrecioProducto));
-            }
-        }
-    }
-    public bool EstadoProducto
-    {
-        get => _estadoProducto;
-        set
-        {
-            if (_estadoProducto != value)
-            {
-                _estadoProducto = value;
-                OnPropertyChanged(nameof(EstadoProducto));
-            }
-        }
-    }
-    public EditProductoViewModel(IRepositoryProducto repositoryProducto)
+    [ObservableProperty] private bool estadoProducto = true;
+    [ObservableProperty] private Categoria? categoriaSeleccionada;
+
+    // true = editar, false = agregar
+    [ObservableProperty] private bool isEditMode;
+
+    public string TituloDialogo => IsEditMode ? "Editar Producto" : "Agregar Producto";
+
+    public EditProductoViewModel(
+        IRepositoryProducto repositoryProducto,
+        IRepositoryCategoria repositoryCategoria,
+        INotificationService notificationService)
     {
         _repositoryProducto = repositoryProducto;
+        _repositoryCategoria = repositoryCategoria;
+        _notificationService = notificationService;
+    }
+
+    public async Task LoadCategoriasAsync()
+    {
+        var cats = await _repositoryCategoria.ObtenerActivasAsync();
+        Categorias.Clear();
+        foreach (var c in cats)
+            Categorias.Add(c);
+    }
+
+    /// <summary>Prepara el ViewModel para editar un producto existente.</summary>
+    public async Task CargarParaEditar(Producto producto)
+    {
+        IsEditMode = true;
+        await LoadCategoriasAsync();
+
+        IdProducto = producto.IdProducto;
+        NombreProducto = producto.NombreProducto;
+        StockProducto = producto.StockProducto;
+        PrecioProducto = producto.PrecioProducto;
+        EstadoProducto = producto.EstadoProducto;
+        CategoriaSeleccionada = producto.Categoria ?? FindCategoria(producto.IdCategoria);
+    }
+
+    /// <summary>Prepara el ViewModel para agregar un producto nuevo.</summary>
+    public async Task CargarParaAgregar()
+    {
+        IsEditMode = false;
+        await LoadCategoriasAsync();
+
+        IdProducto = 0;
+        NombreProducto = string.Empty;
+        StockProducto = 0;
+        PrecioProducto = 0;
+        EstadoProducto = true;
+        CategoriaSeleccionada = null;
+    }
+
+    private Categoria? FindCategoria(int id)
+    {
+        foreach (var c in Categorias)
+            if (c.IdCategoria == id) return c;
+        return null;
     }
 
     [RelayCommand]
-    public async Task SaveChangesProducto()
+    public async Task GuardarProducto()
     {
+        if (string.IsNullOrWhiteSpace(NombreProducto))
+        {
+            _notificationService.ShowWarning("Validación", "El nombre del producto es obligatorio.");
+            return;
+        }
+        if (CategoriaSeleccionada == null)
+        {
+            _notificationService.ShowWarning("Validación", "Selecciona una categoría.");
+            return;
+        }
+        if (PrecioProducto <= 0)
+        {
+            _notificationService.ShowWarning("Validación", "El precio debe ser mayor a 0.");
+            return;
+        }
+
         try
         {
             var producto = new Producto
             {
                 IdProducto = IdProducto,
-                IdCategoria = IdCategoria,
-                NombreProducto = NombreProducto,
+                IdCategoria = CategoriaSeleccionada.IdCategoria,
+                NombreProducto = NombreProducto.Trim(),
                 StockProducto = StockProducto,
                 PrecioProducto = PrecioProducto,
                 EstadoProducto = EstadoProducto
             };
-            //await _repositoryProducto.UpdateProducto(producto);
+
+            if (IsEditMode)
+            {
+                await _repositoryProducto.EditarProducto(producto);
+                _notificationService.ShowSuccess("Producto actualizado",
+                    $"\"{NombreProducto}\" se actualizó correctamente.");
+            }
+            else
+            {
+                await _repositoryProducto.CrearNuevoProducto(producto);
+                _notificationService.ShowSuccess("Producto agregado",
+                    $"\"{NombreProducto}\" se agregó correctamente.");
+            }
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error al guardar los cambios del producto: {ex.Message}");
+            _notificationService.ShowError("Error al guardar", ex.Message);
+            throw; // relanzar para que el diálogo no se cierre
         }
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

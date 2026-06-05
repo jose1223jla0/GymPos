@@ -1,25 +1,32 @@
-﻿using GymPos.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using GymPos.Models;
 using GymPos.Repository;
+using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace GymPos.ViewModels.UsuarioVM;
 
-public class ListUsuarioViewModel : INotifyPropertyChanged
+public partial class ListUsuarioViewModel : ObservableObject
 {
-
     private readonly IRepositoryUsuario _repositoryUsuario;
+
     public ObservableCollection<Usuario> ListUsuario { get; } = new();
+
+    public event Action<Usuario>? OpenEditDialogRequest;
+    public event Action? OpenAddDialogRequest;
+
     public ListUsuarioViewModel(IRepositoryUsuario repositoryUsuario)
     {
         _repositoryUsuario = repositoryUsuario;
     }
+
     public async Task InitializeAsync()
     {
         await LoadUsuario();
     }
+
     /// <summary>
     /// Carga los usuarios desde el repositorio y actualiza ListUsuario.
     /// </summary>
@@ -33,10 +40,15 @@ public class ListUsuarioViewModel : INotifyPropertyChanged
         }
     }
 
-    // ── INotifyPropertyChanged ────────────────────────────────────────────────
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    [RelayCommand]
+    private void Edit(Usuario usuario)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        OpenEditDialogRequest?.Invoke(usuario);
+    }
+
+    [RelayCommand]
+    private void Add()
+    {
+        OpenAddDialogRequest?.Invoke();
     }
 }

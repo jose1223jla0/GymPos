@@ -8,19 +8,24 @@ namespace GymPos.Views
     {
         public LoginWindow()
         {
-            // Crear la página de login en tiempo de ejecución para evitar depender del inicializador generado por XAML
             var loginPage = new LoginPage();
+
             loginPage.LoginSucceeded += LoginPageControl_LoginSucceeded;
-            this.Content = loginPage;
-            this.Title = "Login";
+
+            Content = loginPage;
+
+            Title = "Login";
         }
 
         private void LoginPageControl_LoginSucceeded(object? sender, EventArgs e)
         {
-            // Abrir la ventana principal y cerrar la ventana de login
-            var main = new MainWindow();
-            main.Activate();
-            this.Close();
+            var mainWindow = new MainWindow();
+
+            App.MainAppWindow = mainWindow;
+
+            mainWindow.Activate();
+
+            Close();
         }
     }
 }

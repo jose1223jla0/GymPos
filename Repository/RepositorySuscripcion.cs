@@ -11,7 +11,7 @@ public interface IRepositorySuscripcion
 {
     Task<IEnumerable<Suscripcion>> GetAllSuscripcion();
     Task<Suscripcion?> GetByIdAsync(int id);
-    Task AddSuscripcionAsync(Suscripcion suscripcion);
+    Task<Suscripcion> AddSuscripcionAsync(Suscripcion suscripcion);
     Task<List<Suscripcion>> GetActivasByCliente(int clienteId);
     Task<List<Suscripcion>> GetSuscripcionesActivas();
 }
@@ -24,23 +24,29 @@ public class RepositorySuscripcion : IRepositorySuscripcion
         _context = context;
     }
 
-    public async Task AddSuscripcionAsync(Suscripcion suscripcion)
+    public async Task<Suscripcion> AddSuscripcionAsync(Suscripcion suscripcion)
     {
-        suscripcion.Cancelada = false;
         await _context.Suscripciones.AddAsync(suscripcion);
         await _context.SaveChangesAsync();
+        return suscripcion;
     }
 
     public async Task<List<Suscripcion>> GetActivasByCliente(int clienteId)
     {
         var hoy = DateOnly.FromDateTime(DateTime.Now);
-        return await _context.Suscripciones.Where(s => s.IdCliente == clienteId && !s.Cancelada && s.FechaFin >= hoy).ToListAsync();
+        return await _context.Suscripciones
+                              .Include(s => s.Membresia)
+                              .Include(s => s.Asistencias)
+                              .Where(s => s.IdCliente == clienteId && !s.Cancelada && s.FechaFin >= hoy)
+                              .ToListAsync();
     }
     public async Task<IEnumerable<Suscripcion>> GetAllSuscripcion()
     {
         var listaSuscripcion = await _context.Suscripciones
                                     .Include(s => s.Membresia)
-                                    .Include(s => s.Cliente).ToListAsync();
+                                    .Include(s => s.Cliente)
+                                    .Include(s => s.Asistencias)
+                                    .ToListAsync();
         return listaSuscripcion;
     }
 
@@ -49,16 +55,20 @@ public class RepositorySuscripcion : IRepositorySuscripcion
         var suscripcion = await _context.Suscripciones
                                     .Include(s => s.Membresia)
                                     .Include(s => s.Cliente)
+                                    .Include(s => s.Asistencias)
                                     .FirstOrDefaultAsync(s => s.IdSuscripcion == id);
         return suscripcion;
     }
 
     public async Task<List<Suscripcion>> GetSuscripcionesActivas()
     {
+        var hoy = DateOnly.FromDateTime(DateTime.Now);
         var suscripciones = await _context.Suscripciones
                                   .Include(s => s.Cliente)
                                   .Include(s => s.Membresia)
+                                  .Include(s => s.Asistencias)
+                                  .Where(s => !s.Cancelada && s.FechaFin >= hoy && s.Membresia != null && s.Membresia.Sesiones > 1)
                                   .ToListAsync();
-        return suscripciones.Where(s => s.Estado == EstadoSuscripcion.Activa).ToList();
+        return suscripciones;
     }
 }

@@ -83,7 +83,6 @@ public sealed partial class CreateSuscripcionPage : Page
 
     private async void BtnCrearSuscripcion_Click(object sender, RoutedEventArgs e)
     {
-        // Suscribirse temporalmente al evento para mostrar notificación en la lista si es necesario
         void OnCreada()
         {
             // No-op aquí; la página de lista puede manejar la notificación si lo requiere.
@@ -91,7 +90,6 @@ public sealed partial class CreateSuscripcionPage : Page
         ViewModel.OnSuscripcionCreada += OnCreada;
         await ViewModel.CreateSuscripcionCommand.ExecuteAsync(null);
         ViewModel.OnSuscripcionCreada -= OnCreada;
-        // navegar indicando éxito
         Frame.Navigate(typeof(ListSuscripcionPage), true);
     }
 
@@ -138,12 +136,11 @@ public sealed partial class CreateSuscripcionPage : Page
             {
                 BuscadorDni.Text = clienteCreado.Dni;
                 dialog.Hide();
-                // mostrar info bar indicando que el cliente fue creado
                 NotificationInfoBar.Title = "Cliente creado";
                 NotificationInfoBar.Message = "El cliente se creó correctamente.";
                 NotificationInfoBar.Severity = InfoBarSeverity.Success;
                 NotificationInfoBar.IsOpen = true;
-                _ = Task.Run(async () => { await Task.Delay(3000); this.DispatcherQueue.TryEnqueue(() => NotificationInfoBar.IsOpen = false); });
+                _ =Task.Run(async () => { await Task.Delay(3000); this.DispatcherQueue.TryEnqueue(() => NotificationInfoBar.IsOpen = false); });
             });
         };
         dialog.PrimaryButtonClick += async (s, e) =>

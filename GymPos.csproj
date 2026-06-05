@@ -26,11 +26,15 @@
     <None Remove="Views\DashboardPage.xaml" />
     <None Remove="Views\InicioPage.xaml" />
     <None Remove="Views\LoginPage.xaml" />
+    <None Remove="Views\MembresiaPage\CreateMembresiaPage.xaml" />
+    <None Remove="Views\MembresiaPage\EditMembresiaPage.xaml" />
     <None Remove="Views\MembresiaPage\MembresiaPage.xaml" />
+    <None Remove="Views\PerfilPage\PerfilUserPage.xaml" />
     <None Remove="Views\ProductoPage\EditProductoPage.xaml" />
     <None Remove="Views\ProductoPage\ListProductoPage.xaml" />
     <None Remove="Views\SuscripcionPage\CreateSuscripcionPage.xaml" />
     <None Remove="Views\SuscripcionPage\ListSuscripcionPage.xaml" />
+    <None Remove="Views\UsuarioPage\CreateEditUsuarioPage.xaml" />
     <None Remove="Views\UsuarioPage\ListUsuarioPage.xaml" />
     <None Remove="Views\VentasPage\CreateVentaPage.xaml" />
     <None Remove="Views\VentasPage\ListVentasPage.xaml" />
@@ -62,6 +66,7 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.2" />
@@ -143,6 +148,18 @@
     <None Update="Views\LoginWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+    <Page Update="Views\MembresiaPage\EditMembresiaPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\MembresiaPage\CreateMembresiaPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\PerfilPage\PerfilUserPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\UsuarioPage\CreateEditUsuarioPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\UsuarioPage\ListUsuarioPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

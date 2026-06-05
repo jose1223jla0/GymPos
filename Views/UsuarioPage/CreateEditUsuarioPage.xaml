@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="GymPos.Views.UsuarioPage.CreateEditUsuarioPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GymPos.Views.UsuarioPage"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel Width="380" Spacing="12" Padding="4">
+
+            <InfoBar x:Name="ErrorBar"
+                     IsOpen="{Binding HasError, Mode=TwoWay}"
+                     IsClosable="False"
+                     Severity="Error"
+                     CornerRadius="8"
+                     Content="{Binding MensajeError}" />
+            <!-- Nombre -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Nombre *" FontSize="12" Opacity="0.7"/>
+                <TextBox x:Name="TxtNombre" Text="{Binding NombreUsuario, Mode=TwoWay}" PlaceholderText="Nombre del usuario" CornerRadius="8"/>
+            </StackPanel>
+
+            <!-- Apellidos -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Apellidos *" FontSize="12" Opacity="0.7"/>
+                <TextBox x:Name="TxtApellidos" Text="{Binding ApellidosUsuario, Mode=TwoWay}" PlaceholderText="Apellidos del usuario" CornerRadius="8"/>
+            </StackPanel>
+
+            <!-- DNI/Usuario -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="DNI / Usuario *" FontSize="12" Opacity="0.7"/>
+                <TextBox x:Name="TxtDni" Text="{Binding UsernameDni, Mode=TwoWay}" PlaceholderText="Ej: 12345678" CornerRadius="8"/>
+            </StackPanel>
+
+            <!-- Rol -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Rol *" FontSize="12" Opacity="0.7"/>
+                <ComboBox x:Name="CmbRol"
+                          HorizontalAlignment="Stretch"
+                          CornerRadius="8"
+                          PlaceholderText="Seleccione un rol"
+                          ItemsSource="{Binding Roles}"
+                          SelectedItem="{Binding RolSeleccionado, Mode=TwoWay}"/>
+            </StackPanel>
+
+            <!-- Estado -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Estado" FontSize="12" Opacity="0.7"/>
+                <ToggleSwitch x:Name="TglEstado"
+                              OnContent="Activo"
+                              OffContent="Inactivo"
+                              IsOn="{Binding EstadoUsuario, Mode=TwoWay}"/>
+            </StackPanel>
+
+            <MenuFlyoutSeparator/>
+
+            <!-- Sección de contraseña (para edición, es opcional) -->
+            <CheckBox x:Name="ChkCambiarPassword"
+                      Content="Cambiar contraseña"
+                      Visibility="Collapsed"
+                      Checked="ChkCambiarPassword_Changed"
+                      Unchecked="ChkCambiarPassword_Changed"/>
+
+            <!-- Contraseña -->
+            <StackPanel x:Name="PanelPassword" Spacing="4">
+                <TextBlock Text="Contraseña *" FontSize="12" Opacity="0.7"/>
+                <PasswordBox x:Name="TxtPassword" PlaceholderText="Mínimo 6 caracteres" CornerRadius="8" PasswordChanged="PasswordBox_PasswordChanged"/>
+            </StackPanel>
+
+            <!-- Confirmar -->
+            <StackPanel x:Name="PanelConfirmar" Spacing="4">
+                <TextBlock Text="Confirmar Contraseña *" FontSize="12" Opacity="0.7"/>
+                <PasswordBox x:Name="TxtConfirmar" PlaceholderText="Repite la contraseña" CornerRadius="8" PasswordChanged="PasswordBox_PasswordChanged"/>
+                <TextBlock x:Name="TxtCoincide" Text="Las contraseñas coinciden" FontSize="12" Foreground="Green" Visibility="Collapsed"/>
+                <TextBlock x:Name="TxtNoCoincide" Text="Las contraseñas no coinciden" FontSize="12" Foreground="Red" Visibility="Collapsed"/>
+            </StackPanel>
+            <ProgressBar x:Name="LoadingBar" IsIndeterminate="True" Visibility="Collapsed"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

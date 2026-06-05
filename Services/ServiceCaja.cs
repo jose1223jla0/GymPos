@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using GymPos.Services;
 
 namespace GymPos.Services;
 
@@ -19,9 +20,14 @@ public interface IServiceCaja
 public class ServiceCaja:IServiceCaja
 {
     private readonly GymPosContext _context;
-    public ServiceCaja(GymPosContext context)
+    private readonly IAuthService _authService;
+    private readonly ICajaEventService _cajaEventService;
+
+    public ServiceCaja(GymPosContext context, IAuthService authService, ICajaEventService cajaEventService)
     {
         _context = context;
+        _authService = authService;
+        _cajaEventService = cajaEventService;
     }
 
     public async Task<Caja> AbrirCajaAsync(decimal montoInicial)
@@ -31,9 +37,23 @@ public class ServiceCaja:IServiceCaja
         {
             throw new InvalidOperationException("Ya hay una caja abierta.");
         }
-        var caja = new Caja(montoInicial);
+        var usuario = _authService.UsuarioActual;
+        if (usuario == null)
+        {
+            throw new InvalidOperationException("No hay un usuario autenticado.");
+        }
+
+        var caja = new Caja(montoInicial)
+        {
+            IdUsuario = usuario.IdUsuario
+        };
         _context.Cajas.Add(caja);
         await _context.SaveChangesAsync();
+        try
+        {
+            _cajaEventService?.NotificarCajaAperturada();
+        }
+        catch { }
         return caja;
     }
     public async Task<Caja> CerrarCajaAsync()
@@ -41,6 +61,11 @@ public class ServiceCaja:IServiceCaja
         var caja = await ObtenerCajaAbiertaAsync();
         caja.Cerrar();
         await _context.SaveChangesAsync();
+        try
+        {
+            _cajaEventService?.NotificarCajaCerrada();
+        }
+        catch { }
         return caja;
     }
 
@@ -78,6 +103,13 @@ public class ServiceCaja:IServiceCaja
         var movimiento = MovimientoCaja.CrearIngreso(caja.IdCaja, monto, concepto, idPago);
         _context.MovimientosCaja.Add(movimiento);
         await _context.SaveChangesAsync();
+
+        // Notificar que hubo un movimiento
+        try
+        {
+            _cajaEventService?.NotificarMovimiento();
+        }
+        catch { }
 
         return movimiento;
     }

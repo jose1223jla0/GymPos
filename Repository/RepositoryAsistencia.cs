@@ -13,6 +13,7 @@ public interface IRepositoryAsistencia
     Task<int> ContarAsistenciasAsync(int idSuscripcion);
     Task<bool> ExisteAsistenciaHoyAsync(int idSuscripcion);
     Task AddAsistenciaAsync(Asistencia asistencia);
+    Task<int> ContarAsistenciasHoyAsync();
 }
 
 public class RepositoryAsistencia : IRepositoryAsistencia
@@ -32,15 +33,13 @@ public class RepositoryAsistencia : IRepositoryAsistencia
     public async Task<bool> ExisteAsistenciaHoyAsync(int idSuscripcion)
     {
         var hoy = DateOnly.FromDateTime(DateTime.Now);
-
         var existeAsistencia = await _context.Asistencias.AnyAsync(a => a.IdSuscripcion == idSuscripcion && a.Fecha == hoy);
         return existeAsistencia;
     }
 
     public async Task<IEnumerable<Asistencia>> GetAllAsistenciaAsync()
     {
-        var listaAsistencia = await _context.Asistencias
-                                .Include(a => a.Suscripcion).ToListAsync();
+        var listaAsistencia = await _context.Asistencias.Include(a => a.Suscripcion).ToListAsync();
         return listaAsistencia;
     }
 
@@ -48,5 +47,10 @@ public class RepositoryAsistencia : IRepositoryAsistencia
     {
         _context.Asistencias.Add(asistencia);
         await _context.SaveChangesAsync();
+    }
+    public async Task<int> ContarAsistenciasHoyAsync()
+    {
+        var hoy = DateOnly.FromDateTime(DateTime.Now);
+        return await _context.Asistencias.CountAsync(a => a.Fecha == hoy);
     }
 }

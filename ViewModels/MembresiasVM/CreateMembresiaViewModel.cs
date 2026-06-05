@@ -1,44 +1,21 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GymPos.Models;
 using GymPos.Repository;
 using GymPos.Services;
 using System;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Globalization;
 
-namespace GymPos.ViewModels.MembresiasVM;
-
-public partial class EditMembresiaViewModel : ObservableObject
+public partial class CreateMembresiaViewModel : ObservableObject
 {
     private readonly IRepositoryMembresia _repository;
     private readonly INotificationService _notification;
 
-    [ObservableProperty] private int idMembresia;
     [ObservableProperty] private string nombre = string.Empty;
     [ObservableProperty] private int sesiones;
     [ObservableProperty] private decimal precio;
-
-    [ObservableProperty] private bool isEditMode;
-
-    public event Action? MembresiaGuardada;
-
-    public EditMembresiaViewModel(
-        IRepositoryMembresia repository,
-        INotificationService notification)
-    {
-        _repository = repository;
-        _notification = notification;
-    }
-
-    public void CargarParaEditar(Membresia m)
-    {
-        IsEditMode = true;
-        IdMembresia = m.IdMembresia;
-        Nombre = m.Nombre;
-        Sesiones = m.Sesiones;
-        Precio = m.Precio;
-    }
 
     // Expose Precio as a string for two-way TextBox binding in XAML
     public string PrecioDouble
@@ -61,6 +38,23 @@ public partial class EditMembresiaViewModel : ObservableObject
     partial void OnPrecioChanged(decimal value)
     {
         OnPropertyChanged(nameof(PrecioDouble));
+    }
+
+    public event Action? MembresiaCreada;
+
+    public CreateMembresiaViewModel(
+        IRepositoryMembresia repository,
+        INotificationService notification)
+    {
+        _repository = repository;
+        _notification = notification;
+    }
+
+    public void CargarParaAgregar()
+    {
+        Nombre = "";
+        Sesiones = 0;
+        Precio = 0;
     }
 
     private bool Validar()
@@ -87,25 +81,22 @@ public partial class EditMembresiaViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task GuardarMembresia()
+    public async Task CrearMembresia()
     {
         if (!Validar())
             return;
 
         var m = new Membresia
         {
-            IdMembresia = IdMembresia,
             Nombre = Nombre.Trim(),
             Sesiones = Sesiones,
             Precio = Precio
         };
 
-        if (IsEditMode)
-        {
-            await _repository.UpdateAsync(m);
-            _notification.ShowSuccess("Actualizado", "Membresía actualizada");
-        }
+        await _repository.CrearAsync(m);
 
-        MembresiaGuardada?.Invoke();
+        _notification.ShowSuccess("Creado", "Membresía creada");
+
+        MembresiaCreada?.Invoke();
     }
 }

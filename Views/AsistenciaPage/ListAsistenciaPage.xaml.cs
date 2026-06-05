@@ -1,10 +1,8 @@
 using GymPos.Models;
 using GymPos.ViewModels.Asistencias;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using System;
 using System.Threading.Tasks;
 namespace GymPos.Views.AsistenciaPage;
@@ -23,6 +21,17 @@ public sealed partial class ListAsistenciaPage : Page
     public async void AsistenciaListPage_Loaded(object sender, RoutedEventArgs e)
     {
         await ViewModel.InitAsync();
+    }
+
+    private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        // El binding a ViewModel.SearchText ya disparará el filtrado via OnSearchTextChanged
+    }
+
+    private void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+    {
+        // Forzar actualización por si el binding no se actualizó aún
+        ViewModel.SearchText = sender.Text;
     }
 
     private async void Button_Click(object sender, RoutedEventArgs e)

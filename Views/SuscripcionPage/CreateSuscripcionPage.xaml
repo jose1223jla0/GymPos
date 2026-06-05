@@ -14,6 +14,7 @@
     <Page.Resources>
         <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
         <conv:BoolToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
+        <conv:DateOnlyToDateTimeOffsetConverter x:Key="DateOnlyConverter"/>
     </Page.Resources>
 
     <Grid Padding="30">
@@ -233,14 +234,18 @@
                                 <TextBlock
                                     Text="Fecha de Inicio"
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                <CalendarDatePicker CornerRadius="8" PlaceholderText="Seleccione"/>
+                                <CalendarDatePicker CornerRadius="8" PlaceholderText="Seleccione"
+                                                    Date="{x:Bind ViewModel.FechaInicio, Mode=TwoWay, Converter={StaticResource DateOnlyConverter}}"
+                                                    IsEnabled="{x:Bind ViewModel.FechaPickersEnabled, Mode=OneWay}"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Spacing="6">
                                 <TextBlock
                                     Text="Fecha Final"
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                <CalendarDatePicker CornerRadius="8" PlaceholderText="Seleccione"/>
+                                <CalendarDatePicker CornerRadius="8" PlaceholderText="Seleccione"
+                                                    Date="{x:Bind ViewModel.FechaFin, Mode=OneWay, Converter={StaticResource DateOnlyConverter}}"
+                                                    IsEnabled="{x:Bind ViewModel.FechaPickersEnabled, Mode=OneWay}"/>
                             </StackPanel>
                         </Grid>
 

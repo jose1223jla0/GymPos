@@ -6,18 +6,18 @@ namespace GymPos.Services;
 public interface INotificationService
 {
     event EventHandler<Notification>? NotificationRequested;
-    void ShowNotification(string title, string message, NotificationType type = NotificationType.Informational, int durationSeconds = 3);
-    void ShowSuccess(string title, string message, int durationSeconds = 3);
-    void ShowError(string title, string message, int durationSeconds = 5);
-    void ShowWarning(string title, string message, int durationSeconds = 4);
-    void ShowInfo(string title, string message, int durationSeconds = 3);
+    void ShowNotification(string title, string message, NotificationType type = NotificationType.Informational, int durationSeconds = 2);
+    void ShowSuccess(string title, string message, int durationSeconds = 2);
+    void ShowError(string title, string message, int durationSeconds = 2);
+    void ShowWarning(string title, string message, int durationSeconds = 2);
+    void ShowInfo(string title, string message, int durationSeconds = 2);
 }
 
 public class NotificationService : INotificationService
 {
     public event EventHandler<Notification>? NotificationRequested;
 
-    public void ShowNotification(string title, string message, NotificationType type = NotificationType.Informational, int durationSeconds = 3)
+    public void ShowNotification(string title, string message, NotificationType type = NotificationType.Informational, int durationSeconds = 2)
     {
         var notification = new Notification
         {

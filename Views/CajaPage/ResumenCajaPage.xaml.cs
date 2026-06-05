@@ -14,11 +14,13 @@ namespace GymPos.Views.CajaPage;
 public sealed partial class ResumenCajaPage : Page
 {
     public ResumenCajaViewModel ViewModel { get; }
+    private readonly Services.ICajaEventService? _cajaEventService;
 
     public ResumenCajaPage()
     {
         InitializeComponent();
         ViewModel = App.Services!.GetRequiredService<ResumenCajaViewModel>();
+        _cajaEventService = App.Services!.GetService(typeof(Services.ICajaEventService)) as Services.ICajaEventService;
     }
 
     // ────────── NAVEGACIÓN ──────────
@@ -27,6 +29,11 @@ public sealed partial class ResumenCajaPage : Page
     {
         base.OnNavigatedTo(e);
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+        if (_cajaEventService != null)
+        {
+            _cajaEventService.CajaAperturada += OnCajaAperturada;
+            _cajaEventService.CajaCerrada += OnCajaCerrada;
+        }
         await ViewModel.CargarCajaActivaAsync();
         ActualizarBadge();
     }
@@ -35,6 +42,11 @@ public sealed partial class ResumenCajaPage : Page
     {
         base.OnNavigatedFrom(e);
         ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        if (_cajaEventService != null)
+        {
+            _cajaEventService.CajaAperturada -= OnCajaAperturada;
+            _cajaEventService.CajaCerrada -= OnCajaCerrada;
+        }
     }
 
     // ────────── SUSCRIPCIÓN A CAMBIOS ──────────
@@ -52,12 +64,11 @@ public sealed partial class ResumenCajaPage : Page
     {
         bool abierta = ViewModel.CajaAbierta;
         StatusText.Text = abierta ? "● Abierta" : "● Cerrada";
-        StatusText.Foreground = new SolidColorBrush(abierta ? Color.FromArgb(255, 16, 124, 16) : Color.FromArgb(255, 197, 15, 31));   
+        StatusText.Foreground = new SolidColorBrush(abierta ? Color.FromArgb(255, 16, 124, 16) : Color.FromArgb(255, 197, 15, 31));
         StatusBadge.Background = new SolidColorBrush(abierta ? Color.FromArgb(20, 16, 124, 16) : Color.FromArgb(20, 197, 15, 31));
     }
 
     // ────────── ACCIONES ──────────
-
     private async void OnAbrirCajaClick(object sender, RoutedEventArgs e)
     {
         var fechaApertura = DateTime.Now;
@@ -65,14 +76,12 @@ public sealed partial class ResumenCajaPage : Page
         {
             PlaceholderText = "0.00",
             Minimum = 0,
-            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden,
             HorizontalAlignment = HorizontalAlignment.Stretch
         };
-
         var fechaText = new TextBlock
         {
-            Text = fechaApertura.ToString("dddd, d 'de' MMMM yyyy",
-                        new System.Globalization.CultureInfo("es-PE")),
+            Text = fechaApertura.ToString("dddd, d 'de' MMMM yyyy", new System.Globalization.CultureInfo("es-PE")),
             FontSize = 13,
             FontWeight = FontWeights.SemiBold
         };
@@ -85,26 +94,40 @@ public sealed partial class ResumenCajaPage : Page
         };
 
         var contenido = new StackPanel { Spacing = 16 };
+
         var grid = new Grid { ColumnSpacing = 10 };
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
         var cardFecha = CrearCard("Fecha de apertura", fechaText);
         var cardHora = CrearCard("Hora de apertura", horaText);
+
         Grid.SetColumn(cardFecha, 0);
         Grid.SetColumn(cardHora, 1);
+
         grid.Children.Add(cardFecha);
         grid.Children.Add(cardHora);
+
         contenido.Children.Add(grid);
+
         contenido.Children.Add(new StackPanel
         {
             Spacing = 4,
             Children =
         {
-            new TextBlock { Text = "Monto inicial", FontSize = 12,
-                Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"] },
+            new TextBlock
+            {
+                Text = "Monto inicial",
+                FontSize = 12,
+                Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"]
+            },
             montoBox,
-            new TextBlock { Text = "Dinero físico en caja al inicio del turno", FontSize = 11,
-                Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"] }
+            new TextBlock
+            {
+                Text = "Dinero físico en caja al inicio del turno",
+                FontSize = 11,
+                Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"]
+            }
         }
         });
 
@@ -125,17 +148,49 @@ public sealed partial class ResumenCajaPage : Page
             decimal monto = double.IsNaN(montoBox.Value) ? 0 : (decimal)montoBox.Value;
             await ViewModel.AbrirCajaAsync(monto);
             ActualizarBadge();
-            // mostrar info bar de éxito
-            NotificationInfoBar.Title = "Caja aperta";
+        }
+    }
+
+    private async void OnCajaAperturada()
+    {
+        // Recargar estado real del resumen
+        await ViewModel.CargarCajaActivaAsync();
+        this.DispatcherQueue.TryEnqueue(() => ActualizarBadge());
+
+        this.DispatcherQueue.TryEnqueue(() =>
+        {
+            NotificationInfoBar.Title = "Caja aperturada";
             NotificationInfoBar.Message = "Se ha aperturado la caja de manera exitosa.";
             NotificationInfoBar.Severity = Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success;
             NotificationInfoBar.IsOpen = true;
-            _ = Task.Run(async () =>
-            {
-                await Task.Delay(3000);
-                this.DispatcherQueue.TryEnqueue(() => NotificationInfoBar.IsOpen = false);
-            });
-        }
+        });
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(2000);
+            this.DispatcherQueue.TryEnqueue(() => NotificationInfoBar.IsOpen = false);
+        });
+    }
+
+    private async void OnCajaCerrada()
+    {
+        // Al cerrar la caja recargar el resumen (queda sin datos)
+        await ViewModel.CargarCajaActivaAsync();
+        this.DispatcherQueue.TryEnqueue(() => ActualizarBadge());
+
+        this.DispatcherQueue.TryEnqueue(() =>
+        {
+            NotificationInfoBar.Title = "Caja cerrada";
+            NotificationInfoBar.Message = "La caja se ha cerrado correctamente.";
+            NotificationInfoBar.Severity = Microsoft.UI.Xaml.Controls.InfoBarSeverity.Informational;
+            NotificationInfoBar.IsOpen = true;
+        });
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(2000);
+            this.DispatcherQueue.TryEnqueue(() => NotificationInfoBar.IsOpen = false);
+        });
     }
 
     // Helper para las tarjetas de fecha/hora
@@ -150,15 +205,15 @@ public sealed partial class ResumenCajaPage : Page
             {
                 Spacing = 2,
                 Children =
-            {
-                new TextBlock
                 {
-                    Text = label,
-                    FontSize = 11,
-                    Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"]
-                },
-                valor
-            }
+                    new TextBlock
+                    {
+                        Text = label,
+                        FontSize = 11,
+                        Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"]
+                    },
+                    valor
+                }
             }
         };
     }

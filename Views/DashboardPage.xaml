@@ -45,7 +45,7 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Spacing="6">
-                            <TextBlock Text="28"
+                            <TextBlock Text="{Binding ClientesCount}"
                                  Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                                  FontSize="20"/>
                         </StackPanel>
@@ -65,10 +65,10 @@
                             <FontIcon Glyph="&#xE8C7;" Foreground="#00CC13"/>
                             <TextBlock Text="Ingresos hoy"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            
+
                         </StackPanel>
-                        
-                        <TextBlock Text="S/ 250.00"
+
+                        <TextBlock Text="{Binding IngresosHoyStr}"
                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                                FontSize="20"/>
                     </StackPanel>
@@ -88,8 +88,8 @@
                             <TextBlock Text="Control de asistencia"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>
-                        
-                        <TextBlock Text="12"
+
+                        <TextBlock Text="{Binding AsistenciasHoy}"
                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                                FontSize="20"/>
                     </StackPanel>
@@ -109,8 +109,8 @@
                             <TextBlock Text="Membresías"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>
-                        
-                        <TextBlock Text="4"
+
+                        <TextBlock Text="{Binding MembresiasCount}"
                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                                FontSize="20"/>
                     </StackPanel>
@@ -196,7 +196,7 @@
                         Height="180">
 
                         <StackPanel>
-                            <StackPanel Orientation="Horizontal" Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
                                 <TextBlock Text="Actividad en vivo"
                                             Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                                             FontWeight="SemiBold"/>
@@ -213,31 +213,16 @@
 
                             <ListView Background="Transparent"
                                   BorderThickness="0"
-                                  Foreground="{ThemeResource TextFillColorPrimaryBrush}">
-
-                                <ListViewItem>
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <FontIcon Glyph="&#xE13D;" />
-                                        <!-- check-in -->
-                                        <TextBlock Text="Check-in: Jose Luis Andrade"/>
-                                    </StackPanel>
-                                </ListViewItem>
-
-                                <ListViewItem>
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <FontIcon Glyph="&#xE719;" />
-                                        <!-- compra -->
-                                        <TextBlock Text="Venta: proteína"/>
-                                    </StackPanel>
-                                </ListViewItem>
-
-                                <ListViewItem>
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <FontIcon Glyph="&#xE77B;" />
-                                        <!-- usuario/membresía -->
-                                        <TextBlock Text="Membresía nueva"/>
-                                    </StackPanel>
-                                </ListViewItem>
+                                  Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                                  ItemsSource="{Binding Actividades}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon  Glyph="&#xE945;" Foreground="OrangeRed" />
+                                            <TextBlock Text="{Binding}" FontSize="10"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
                             </ListView>
                         </StackPanel>
 

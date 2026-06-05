@@ -11,6 +11,8 @@ public interface IRepositoryMembresia
     Task<IEnumerable<Membresia>> GetAllAsync();
     Task<Membresia?> GetById(int id);
     Task UpdateAsync(Membresia membresia);
+    Task CrearAsync(Membresia membresia);
+    Task<int> CountMembresiaAsync();
 }
 public class RepositoryMembresia : IRepositoryMembresia
 {
@@ -20,25 +22,35 @@ public class RepositoryMembresia : IRepositoryMembresia
         _context = contex;
     }
     public async Task<IEnumerable<Membresia>> GetAllAsync()
-    {
-        var listMembresias = await _context.Membresias.ToListAsync();
-        return listMembresias;
-    }
+        => await _context.Membresias.ToListAsync();
 
     public async Task<Membresia?> GetById(int id)
-    {
-        return await _context.Membresias.FindAsync(id);
-    }
+        => await _context.Membresias.FindAsync(id);
 
     public async Task UpdateAsync(Membresia membresia)
     {
-        var nuevaMembresia = new Membresia
-        {
-            IdMembresia = membresia.IdMembresia,
-            Nombre = membresia.Nombre,
-            Sesiones = membresia.Sesiones
-        };
-        _context.Membresias.Update(nuevaMembresia);
+        var existing = await _context.Membresias.FindAsync(membresia.IdMembresia)
+            ?? throw new System.InvalidOperationException($"Membresía {membresia.IdMembresia} no encontrada.");
+        existing.Nombre = membresia.Nombre;
+        existing.Sesiones = membresia.Sesiones;
+        existing.Precio = membresia.Precio;
         await _context.SaveChangesAsync();
+    }
+
+    public async Task CrearAsync(Membresia membresia)
+    {
+        var nueva = new Membresia
+        {
+            Nombre = membresia.Nombre,
+            Sesiones = membresia.Sesiones,
+            Precio = membresia.Precio
+        };
+        _context.Membresias.Add(nueva);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<int> CountMembresiaAsync()
+    {
+        return await _context.Membresias.CountAsync();
     }
 }

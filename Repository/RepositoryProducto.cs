@@ -12,6 +12,7 @@ public interface IRepositoryProducto
 {
     Task<IEnumerable<Producto>> ObtenerActivosAsync();
     Task<IEnumerable<Producto>> ObtenerPorCategoriaAsync(int idCategoria);
+    Task<IEnumerable<Producto>> ObtenerPorNombreAsync(string termino, int? idCategoria = null);
     Task ActualizarStockAsync(int idProducto, int cantidad);
     Task<Producto?> ObtenerPorIdAsync(int id);
     Task CrearNuevoProducto(Producto producto);
@@ -40,6 +41,29 @@ public class RepositoryProducto : IRepositoryProducto
                                      .Include(p => p.DetallesVenta)
                                      .OrderBy(p => p.NombreProducto)
                                      .ToListAsync();
+        return obtenerProductos;
+    }
+
+    public async Task<IEnumerable<Producto>> ObtenerPorNombreAsync(string termino, int? idCategoria = null)
+    {
+        var query = _context.Productos.AsQueryable();
+
+        if (idCategoria.HasValue && idCategoria.Value != 0)
+            query = query.Where(p => p.IdCategoria == idCategoria.Value);
+
+        if (!string.IsNullOrWhiteSpace(termino))
+        {
+            var t = termino.Trim().ToLower();
+            query = query.Where(p => p.EstadoProducto && p.NombreProducto.ToLower().Contains(t));
+        }
+        else
+        {
+            query = query.Where(p => p.EstadoProducto);
+        }
+
+        var obtenerProductos = await query.Include(p => p.Categoria)
+                                          .OrderBy(p => p.NombreProducto)
+                                          .ToListAsync();
         return obtenerProductos;
     }
 

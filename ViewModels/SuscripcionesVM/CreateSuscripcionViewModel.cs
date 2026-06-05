@@ -20,6 +20,7 @@ public partial class CreateSuscripcionViewModel : INotifyPropertyChanged
     private Membresia? _membresiaSeleccionado;
     private DateOnly _fechaInicio = DateOnly.FromDateTime(DateTime.Today);
     private DateOnly _fechaFin = DateOnly.FromDateTime(DateTime.Today);
+    private bool _isPaseDiario;
     private bool _isLoading;
     private string _errorMessage = string.Empty;
     private string _textoBusqueda = string.Empty;
@@ -48,14 +49,48 @@ public partial class CreateSuscripcionViewModel : INotifyPropertyChanged
             if (_membresiaSeleccionado != value)
             {
                 _membresiaSeleccionado = value;
+                _isPaseDiario = _membresiaSeleccionado != null && _membresiaSeleccionado.Sesiones == 1;
+                if (_membresiaSeleccionado != null)
+                {
+                    if (!_isPaseDiario)
+                    {
+                        FechaFin = FechaInicio.AddDays(_membresiaSeleccionado.Sesiones);
+                    }
+                    else
+                    {
+                        FechaFin = FechaInicio;
+                    }
+                }
+                else
+                {
+                    FechaFin = DateOnly.FromDateTime(DateTime.Today);
+                }
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(IsPaseDiario));
+                OnPropertyChanged(nameof(FechaPickersEnabled));
+                OnPropertyChanged(nameof(FechaFinIsEditable));
             }
         }
     }
     public DateOnly FechaInicio
     {
         get => _fechaInicio;
-        set { if (_fechaInicio != value) { _fechaInicio = value; OnPropertyChanged(); } }
+        set
+        {
+            if (_fechaInicio != value)
+            {
+                _fechaInicio = value;
+                OnPropertyChanged();
+                if (MembresiaSeleccionado != null && !_isPaseDiario)
+                {
+                    FechaFin = _fechaInicio.AddDays(MembresiaSeleccionado.Sesiones);
+                }
+                else
+                {
+                    FechaFin = _fechaInicio;
+                }
+            }
+        }
     }
 
     public DateOnly FechaFin
@@ -63,6 +98,10 @@ public partial class CreateSuscripcionViewModel : INotifyPropertyChanged
         get => _fechaFin;
         set { if (_fechaFin != value) { _fechaFin = value; OnPropertyChanged(); } }
     }
+
+    public bool IsPaseDiario => _isPaseDiario;
+    public bool FechaPickersEnabled => MembresiaSeleccionado != null && !_isPaseDiario;
+    public bool FechaFinIsEditable => false;
 
     public bool IsLoading
     {

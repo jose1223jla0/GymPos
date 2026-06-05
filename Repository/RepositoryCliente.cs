@@ -11,6 +11,7 @@ namespace GymPos.Repository;
 public interface IRepositoryCliente
 {
     Task<List<Cliente>> GetAll();
+    Task<Cliente?> GetById(int id);
     Task AddCliente(Cliente cliente);
     Task UpdateCliente(Cliente cliente);
     Task<Cliente?> GetClienteByDni(string dni);
@@ -27,6 +28,10 @@ public class RepositoryCliente : IRepositoryCliente
     public RepositoryCliente(GymPosContext context)
     {
         _context = context;
+    }
+    public async Task<int> CountClientes()
+    {
+        return await _context.Clientes.CountAsync();
     }
 
     public async Task<List<Cliente>> GetAll()
@@ -77,9 +82,11 @@ public class RepositoryCliente : IRepositoryCliente
                     }).OrderBy(c => c.IdCliente).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
     }
 
-    public async Task<int> CountClientes()
+  
+    public async Task<Cliente?> GetById(int id)
     {
-        return await _context.Clientes.CountAsync();
+        return await _context.Clientes
+                             .FirstOrDefaultAsync(c => c.IdCliente == id);
     }
 
     public async Task<List<Cliente>> BuscarClientes(string query)

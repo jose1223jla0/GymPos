@@ -6,6 +6,7 @@ using GymPos.ViewModels.CarritoVM;
 using GymPos.ViewModels.CategoriaVM;
 using GymPos.ViewModels.ProductoVM;
 using System;
+using System.Collections.Generic;
 using GymPos.Repository;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -24,6 +25,8 @@ public partial class VentaViewModel : ObservableObject
 
     // ── Colecciones públicas ────────────────────────────────────────────────
     public ObservableCollection<ProductoViewModel> Productos { get; } = new();
+    // Caché interna de productos para poder filtrar por nombre sin volver a consultar
+    private readonly List<ProductoViewModel> _productosCache = new();
     public ObservableCollection<CategoriaViewModel> Categorias { get; } = new();
     public ObservableCollection<CarritoItemViewModel> Carrito { get; } = new();
 
@@ -32,6 +35,10 @@ public partial class VentaViewModel : ObservableObject
     [ObservableProperty] private string? _mensajeError;
     [ObservableProperty] private bool _ventaExitosa;
     [ObservableProperty] private int _idCajaActiva;
+
+    // Término de búsqueda para filtrar productos por nombre
+    [ObservableProperty]
+    private string? _terminoBusqueda;
 
     private CategoriaViewModel? _categoriaSeleccionada;
 
@@ -149,10 +156,16 @@ public partial class VentaViewModel : ObservableObject
         IsLoading = true;
         try
         {
-            var lista = await _productoService.ObtenerProductosAsync(idCategoria);
+            var lista = await _productoService.ObtenerProductosAsync(idCategoria, TerminoBusqueda);
             Productos.Clear();
+            _productosCache.Clear();
             foreach (var p in lista)
-                Productos.Add(new ProductoViewModel(p));
+            {
+                var pvm = new ProductoViewModel(p);
+                _productosCache.Add(pvm);
+            }
+
+            AplicarFiltroBusqueda();
         }
         catch (Exception ex)
         {
@@ -162,6 +175,31 @@ public partial class VentaViewModel : ObservableObject
         {
             IsLoading = false;
         }
+    }
+
+    private void AplicarFiltroBusqueda()
+    {
+        Productos.Clear();
+
+        if (string.IsNullOrWhiteSpace(TerminoBusqueda))
+        {
+            foreach (var p in _productosCache)
+                Productos.Add(p);
+            return;
+        }
+
+        var termino = TerminoBusqueda.Trim().ToLowerInvariant();
+        foreach (var p in _productosCache)
+        {
+            if (p.NombreProducto != null && p.NombreProducto.ToLowerInvariant().Contains(termino))
+                Productos.Add(p);
+        }
+    }
+
+    // Invocado automáticamente por el CommunityToolkit cuando TerminoBusqueda cambia
+    partial void OnTerminoBusquedaChanged(string? value)
+    {
+        AplicarFiltroBusqueda();
     }
 
     // ── Agregar al carrito ──────────────────────────────────────────────────

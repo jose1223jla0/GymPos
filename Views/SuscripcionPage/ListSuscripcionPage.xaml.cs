@@ -20,16 +20,12 @@ public sealed partial class ListSuscripcionPage : Page
     /// <summary>
     /// Inicializa la vista cuando se carga la página y ejecuta de forma asíncrona ViewModel.InitAsync. 
     /// </summary>
-    /// <remarks>Manejador de eventos asincrónico; async void debe usarse únicamente para controladores de
-    /// eventos.</remarks>
-    /// <param name="sender">Origen del evento, normalmente la página o el control que desencadena la carga.</param>
-    /// <param name="e">Argumentos del evento de enrutamiento.</param>
     public async void SuscripcionListPage_Loaded(object sender, RoutedEventArgs e)
     {
         await ViewModel.InitAsync();
     }
 
-    protected override void OnNavigatedTo(NavigationEventArgs e)
+    protected async override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
         if (e.Parameter is bool created && created)
@@ -38,7 +34,7 @@ public sealed partial class ListSuscripcionPage : Page
             NotificationInfoBar.Message = "La suscripción se creó correctamente.";
             NotificationInfoBar.Severity = InfoBarSeverity.Success;
             NotificationInfoBar.IsOpen = true;
-            _ = Task.Run(async () => { await Task.Delay(3000); this.DispatcherQueue.TryEnqueue(() => NotificationInfoBar.IsOpen = false); });
+            await Task.Run(async () => { await Task.Delay(3000); this.DispatcherQueue.TryEnqueue(() => NotificationInfoBar.IsOpen = false); });
         }
     }
 }

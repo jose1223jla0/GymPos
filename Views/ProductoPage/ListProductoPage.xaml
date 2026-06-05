@@ -7,91 +7,95 @@
     xmlns:local="using:GymPos.Views.ProductoPage"
     xmlns:models="using:GymPos.Models"
     xmlns:tv="using:WinUI.TableView"
-    xmlns:localVM="using:GymPos.ViewModels.CarritoVM"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <Grid Margin="20">
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.4*"/>
-            <ColumnDefinition Width="0.6*"/>
-        </Grid.ColumnDefinitions>
+    <Grid Margin="20" RowSpacing="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <!-- ===================== -->
-        <!-- IZQUIERDA: FORMULARIO -->
-        <!-- ===================== -->
-        <Border
-            Grid.Column="0"
-            Margin="10,0,10,0"
-            Padding="16"
-            CornerRadius="16"
-            BorderThickness="1"
-            BorderBrush="{ThemeResource AccentAAFillColorDefaultBrush}">
-
-            <StackPanel Spacing="20">
-
-                <StackPanel 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Center"
-                    Spacing="8">
-                    <FontIcon 
-                        Glyph="&#xE710;"
-                        FontSize="22"
-                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                    <TextBlock 
-                        Text="Registrar Producto"
-                        FontSize="20"
-                        FontWeight="SemiBold"/>
+        <!-- Notificación Toast -->
+        <Border x:Name="NotificationToastBorder"
+                Grid.Row="0"
+                Visibility="Collapsed"
+                CornerRadius="12"
+                Padding="20,16,20,16"
+                Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}"
+                BorderThickness="1"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                Margin="0,0,0,10">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="IconContainer"
+                      Grid.Column="0"
+                      Width="40" Height="40"
+                      CornerRadius="8"
+                      Background="#0078D4">
+                    <FontIcon x:Name="NotificationIcon"
+                              Glyph="&#xE946;"
+                              FontSize="20"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Foreground="White"/>
+                </Grid>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                    <TextBlock x:Name="TitleTextBlock"
+                               Text="Notificación"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                    <TextBlock x:Name="MessageTextBlock"
+                               Text="Mensaje"
+                               FontSize="13"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                 </StackPanel>
-
-                <TextBox 
-                    PlaceholderText="Nombre del producto"
-                    Header="Nombre" />
-
-                <!--<TextBox Header="Stock"
-                     Text="{x:Bind ViewModel.Producto.StockProducto, Mode=TwoWay}" />-->
-
-                <NumberBox
-        Header="Stock"
-        PlaceholderText="Cantidad disponible"
-        SpinButtonPlacementMode="Inline"
-        SmallChange="1" />
-
-                <NumberBox
-        Header="Precio"
-        PlaceholderText="0.00"
-        SpinButtonPlacementMode="Inline"
-        SmallChange="0.50" />
-
-
-
-                <ComboBox
-                    PlaceholderText="Categoria del Producto"
-                    Header="Categoria"/>
-
-                <!--<ComboBox Header="Categoría"
-                      ItemsSource="{x:Bind ViewModel.Categorias}"
-                      SelectedItem="{x:Bind ViewModel.Producto.Categoria, Mode=TwoWay}"
-                      DisplayMemberPath="NombreCategoria"/>-->
-
-                <!--<Button Content="Guardar"
-                    Command="{x:Bind ViewModel.SaveCommand}"
-                    HorizontalAlignment="Stretch"/>-->
-
-                <Button
-                    Content="Guardar"
-                    Background="{ThemeResource AccentAAFillColorDefaultBrush}"
-                    HorizontalAlignment="Stretch"/>
-
-            </StackPanel>
+                <Button Grid.Column="2"
+                        Background="Transparent"
+                        Padding="8"
+                        Click="CloseToast_Click"
+                        VerticalAlignment="Top">
+                    <FontIcon Glyph="&#xE71B;" FontSize="14"/>
+                </Button>
+            </Grid>
         </Border>
 
-        <!-- ===================== -->
-        <!-- DERECHA: LISTA -->
-        <!-- ===================== -->
+        <!-- Encabezado + botón agregar -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Column="0"
+                Text="Productos"
+                FontSize="20"
+                FontWeight="SemiBold"
+                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                VerticalAlignment="Center"/>
+            <Button
+                Grid.Column="1"
+                Command="{x:Bind ViewModel.AddCommand}"
+                Background="{ThemeResource AccentAAFillColorDefaultBrush}"
+                CornerRadius="8"
+                Padding="16,8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE710;" FontSize="14" Foreground="White"/>
+                    <TextBlock Text="Agregar Producto" Foreground="White"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Tabla de productos -->
         <tv:TableView
-            Grid.Column="1"
+            Grid.Row="2"
             ItemsSource="{x:Bind ViewModel.ListProductos}"
             FontSize="13"
             AutoGenerateColumns="False"
@@ -101,46 +105,107 @@
             <tv:TableView.Columns>
 
                 <tv:TableViewTextColumn Header="Categoría"
-                                   Width="180"
-                                   Binding="{Binding Categoria.NombreCategoria}" />
+                                       Width="180"
+                                       Binding="{Binding Categoria.NombreCategoria}" />
 
                 <tv:TableViewTextColumn Header="Nombre"
-                                   Width="200"
-                                   Binding="{Binding NombreProducto}" />
+                                       Width="220"
+                                       Binding="{Binding NombreProducto}" />
 
                 <tv:TableViewTextColumn Header="Stock"
-                                   Width="80"
-                                   Binding="{Binding StockProducto}" />
+                                       Width="80"
+                                       Binding="{Binding StockProducto}" />
 
                 <tv:TableViewTextColumn Header="Precio"
-                                   Width="100"
-                                   Binding="{Binding PrecioProducto, Converter={StaticResource PrecioConverter}}" />
+                                       Width="110"
+                                       Binding="{Binding PrecioProducto, Converter={StaticResource PrecioConverter}}" />
 
                 <tv:TableViewTextColumn Header="Estado"
-                                   Width="150"
-                                   Binding="{Binding EstadoProducto, Converter={StaticResource EstadoProductoConverter}}" />
+                                       Width="130"
+                                       Binding="{Binding EstadoProducto, Converter={StaticResource EstadoProductoConverter}}" />
 
-                <tv:TableViewTemplateColumn Header="Acciones"
-                                       Width="120">
-
+                <tv:TableViewTemplateColumn Header="Acciones" Width="100">
                     <tv:TableViewTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-
-                                <Button Command="{Binding ElementName=Root, Path=ViewModel.EditCommand}"
-                                    CommandParameter="{Binding}">
-                                    <FontIcon Glyph="&#xE70F;" />
+                        <DataTemplate x:DataType="models:Producto">
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <Button
+                                    Command="{Binding ElementName=Root, Path=ViewModel.EditCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTipService.ToolTip="Editar"
+                                    Background="Transparent"
+                                    Padding="6">
+                                    <FontIcon Glyph="&#xE70F;" FontSize="14"/>
                                 </Button>
-
                             </StackPanel>
                         </DataTemplate>
                     </tv:TableViewTemplateColumn.CellTemplate>
-
                 </tv:TableViewTemplateColumn>
 
             </tv:TableView.Columns>
-
         </tv:TableView>
+
+        <!-- Diálogo Agregar / Editar -->
+        <ContentDialog
+            x:Name="ProductoDialog"
+            PrimaryButtonText="Guardar"
+            CloseButtonText="Cancelar"
+            PrimaryButtonClick="ProductoDialog_PrimaryButtonClick"
+            DefaultButton="Primary">
+            <ContentDialog.Resources>
+                <x:Double x:Key="ContentDialogMinWidth">420</x:Double>
+            </ContentDialog.Resources>
+            <ScrollViewer>
+                <StackPanel Spacing="16" Padding="4" MinWidth="380">
+
+                    <TextBlock x:Name="DialogTitulo"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+
+                    <!-- Nombre -->
+                    <TextBox
+                        Header="Nombre del producto *"
+                        PlaceholderText="Ej: Proteína Whey 1kg"
+                        Text="{x:Bind EditViewModel.NombreProducto, Mode=TwoWay}"
+                        BorderThickness="1"/>
+
+                    <!-- Categoría -->
+                    <ComboBox
+                        Header="Categoría *"
+                        PlaceholderText="Selecciona una categoría"
+                        HorizontalAlignment="Stretch"
+                        ItemsSource="{x:Bind EditViewModel.Categorias}"
+                        SelectedItem="{x:Bind EditViewModel.CategoriaSeleccionada, Mode=TwoWay}"
+                        DisplayMemberPath="NombreCategoria"/>
+
+                    <!-- Stock -->
+                    <NumberBox
+                        Header="Stock"
+                        PlaceholderText="0"
+                        Value="{x:Bind EditViewModel.StockProducto, Mode=TwoWay}"
+                        SpinButtonPlacementMode="Inline"
+                        Minimum="0"
+                        SmallChange="1"/>
+
+                    <!-- Precio -->
+                    <NumberBox
+                        Header="Precio (S/) *"
+                        PlaceholderText="0.00"
+                        Value="{x:Bind EditViewModel.PrecioProductoDouble, Mode=TwoWay}"
+                        SpinButtonPlacementMode="Inline"
+                        Minimum="0"
+                        SmallChange="0.50"/>
+
+                    <!-- Estado (solo en modo edición) -->
+                    <ToggleSwitch
+                        Header="Producto activo"
+                        IsOn="{x:Bind EditViewModel.EstadoProducto, Mode=TwoWay}"
+                        Visibility="{x:Bind EditViewModel.IsEditMode, Mode=OneWay,
+                            Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
 
     </Grid>
 </Page>

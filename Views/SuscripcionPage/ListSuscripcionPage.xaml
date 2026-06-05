@@ -17,8 +17,6 @@
 
     <Grid Margin="20" RowSpacing="10">
 
-
-
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -98,11 +96,11 @@
                         Header="Acciones"
                         Width="200">
 
-                    <tv:TableViewTemplateColumn.CellTemplate>
+                    <!--<tv:TableViewTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Spacing="10">
 
-                                <!--EDITAR-->
+                                --><!--EDITAR--><!--
                                 <Button 
                                     Background="Transparent"
                                     Command="{Binding DataContext.EditCommand, ElementName=RootTable}"
@@ -113,7 +111,7 @@
                                         FontSize="15"/>
                                 </Button>
 
-                                <!--ELIMINAR-->
+                                --><!--ELIMINAR--><!--
                                 <Button Background="Transparent"
                                         Command="{Binding DataContext.DeleteCommand, ElementName=RootTable}"
                                         CommandParameter="{Binding}">
@@ -124,7 +122,7 @@
                             </StackPanel>
 
                         </DataTemplate>
-                    </tv:TableViewTemplateColumn.CellTemplate>
+                    </tv:TableViewTemplateColumn.CellTemplate>-->
 
                 </tv:TableViewTemplateColumn>
 

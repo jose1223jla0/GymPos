@@ -66,7 +66,7 @@ public class MovimientoCaja
         => new(idCaja, TipoMovimiento.Ingreso, monto, concepto, idPago);
 
     public static MovimientoCaja CrearIngresoVenta(int idCaja, decimal monto, string concepto, int idVenta)
-        => new(idCaja, TipoMovimiento.Ingreso, monto, concepto, idVenta: idVenta);   // ✅ nuevo factory
+        => new(idCaja, TipoMovimiento.Ingreso, monto, concepto, idVenta: idVenta);  
 
     public static MovimientoCaja CrearEgreso(int idCaja, decimal monto, string concepto)
         => new(idCaja, TipoMovimiento.Egreso, monto, concepto);

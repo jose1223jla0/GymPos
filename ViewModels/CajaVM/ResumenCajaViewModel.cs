@@ -96,7 +96,9 @@ public partial class ResumenCajaViewModel : INotifyPropertyChanged
 
         try
         {
-            CajaActual = await _cajaService.CerrarCajaAsync();
+            // Cerrar la caja en el servicio; una vez cerrada no hay caja activa
+            await _cajaService.CerrarCajaAsync();
+            CajaActual = null;
         }
         catch (InvalidOperationException)
         {

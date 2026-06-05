@@ -32,10 +32,11 @@
                     <Border 
                         CornerRadius="15"
                         Padding="20"
+                        
                         Width="280"
                         Height="180"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderThickness="1"
+                        BorderThickness="2"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
 
                         <Grid>

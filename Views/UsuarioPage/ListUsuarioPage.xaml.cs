@@ -1,4 +1,9 @@
+using GymPos.Models;
+using GymPos.Services;
+using GymPos.ViewModels.UsuarioVM;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
+using System;
 namespace GymPos.Views.UsuarioPage;
 
 /// <summary>
@@ -6,8 +11,114 @@ namespace GymPos.Views.UsuarioPage;
 /// </summary>
 public sealed partial class ListUsuarioPage : Page
 {
+    public ListUsuarioViewModel ViewModel { get; }
+    public CreateUsuarioViewModel CreateViewModel { get; }
+    public EditUsuarioViewModel EditViewModel { get; }
+    private readonly INotificationService _notificationService;
+    private readonly IAuthService _authService;
+    private Microsoft.UI.Dispatching.DispatcherQueueTimer? _notificationTimer;
+
     public ListUsuarioPage()
     {
         InitializeComponent();
+
+        ViewModel = App.Services!.GetRequiredService<ListUsuarioViewModel>();
+        CreateViewModel = App.Services!.GetRequiredService<CreateUsuarioViewModel>();
+        EditViewModel = App.Services!.GetRequiredService<EditUsuarioViewModel>();
+        _notificationService = App.Services!.GetRequiredService<INotificationService>();
+        _authService = App.Services!.GetRequiredService<IAuthService>();
+
+        DataContext = ViewModel;
+
+        ViewModel.OpenAddDialogRequest += OnOpenAddDialogRequest;
+        ViewModel.OpenEditDialogRequest += OnOpenEditDialogRequest;
+        _notificationService.NotificationRequested += NotificationService_NotificationRequested;
+
+        Loaded += ListUsuarioPage_Loaded;
+    }
+
+    // Visibility for the Add button: only visible when the current user is not a recepcionista
+    public Microsoft.UI.Xaml.Visibility AddButtonVisibility => _authService.EsRecepcionista ? Microsoft.UI.Xaml.Visibility.Collapsed : Microsoft.UI.Xaml.Visibility.Visible;
+    private async void ListUsuarioPage_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        await ViewModel.InitializeAsync();
+    }
+    private void EditButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is Usuario usuario)
+        {
+            // Prevent recepcionista from editing users
+            if (_authService.EsRecepcionista)
+            {
+                _notificationService.ShowWarning("Permisos", "No tiene permisos para editar usuarios.");
+                return;
+            }
+            if (usuario.Rol == Rol.SuperAdmin)
+            {
+                _notificationService.ShowWarning("Usuario", "El Super Administrador no se puede editar.");
+                return;
+            }
+            if (ViewModel.EditCommand.CanExecute(usuario))
+            {
+                ViewModel.EditCommand.Execute(usuario);
+            }
+        }
+    }
+    private async void OnOpenAddDialogRequest()
+    {
+        UserEditor.DataContext = CreateViewModel;
+        UsuarioDialog.XamlRoot = this.XamlRoot;
+        await UsuarioDialog.ShowAsync();
+    }
+    private async void OnOpenEditDialogRequest(Usuario usuario)
+    {
+        EditViewModel.CargarUsuario(usuario);
+        UserEditor.SetupForEdit(EditViewModel);
+        UsuarioDialog.XamlRoot = this.XamlRoot;
+        await UsuarioDialog.ShowAsync();
+    }
+
+    private async void UsuarioDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    {
+        if (UserEditor.CurrentViewModel is CreateUsuarioViewModel cvm)
+        {
+            await cvm.GuardarAsync();
+            await ViewModel.InitializeAsync();
+            _notificationService.ShowSuccess("Usuario", "Usuario creado correctamente.");
+        }
+        else if (UserEditor.CurrentViewModel is EditUsuarioViewModel evm)
+        {
+            await evm.GuardarAsync();
+            await ViewModel.InitializeAsync();
+            _notificationService.ShowSuccess("Usuario", "Usuario actualizado correctamente.");
+        }
+    }
+
+    private void NotificationService_NotificationRequested(object? sender, Notification notification)
+    {
+        if (_notificationTimer != null)
+        {
+            _notificationTimer.Stop();
+            _notificationTimer = null;
+        }
+        TitleTextBlock.Text = notification.Title;
+        MessageTextBlock.Text = notification.Message;
+        NotificationToastBorder.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+        _notificationTimer = DispatcherQueue.CreateTimer();
+        _notificationTimer.Interval = TimeSpan.FromSeconds(notification.DurationSeconds);
+        _notificationTimer.Tick += (s, e) =>
+        {
+            NotificationToastBorder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            _notificationTimer?.Stop();
+            _notificationTimer = null;
+        };
+        _notificationTimer.Start();
+    }
+
+    private void CloseButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        NotificationToastBorder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+        _notificationTimer?.Stop();
+        _notificationTimer = null;
     }
 }

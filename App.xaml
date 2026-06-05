@@ -14,6 +14,8 @@
 
             <conv:ObjectToBoolConverter x:Key="ObjectToBoolConverter"/>
             <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+            <!-- Alias usado en algunos XAML -->
+            <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <conv:BoolToVisibilityInverseConverter x:Key="InverseBoolToVis"/>
             <conv:InvertedBoolToVisConverter x:Key="InvertedBoolToVis"/>
             <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>

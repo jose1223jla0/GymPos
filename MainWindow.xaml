@@ -13,83 +13,160 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
     <Grid>
-
         <!--=========INFOBAR GLOBAL=========== -->
-        <InfoBar x:Name="GlobalInfoBar"
-             Grid.Row="0"
-             IsOpen="False"
-             Title="Mensaje"
-             Severity="Informational"
-             Message=""/>
+        <InfoBar 
+            x:Name="GlobalInfoBar"
+            Grid.Row="0"
+            IsOpen="False"
+            Title="Mensaje"
+            Severity="Informational"
+            Message=""/>
 
-
-        <NavigationView x:Name="nvSample"
-                        Grid.Row="1"
-                        PaneTitle="GymPOS"
-                        SelectionFollowsFocus="Enabled"
-                        PaneDisplayMode="Auto"
-                        IsBackButtonVisible="Collapsed"
-                        IsPaneOpen="True"
-                        CompactPaneLength="60"
-                        SelectionChanged="nvSample_SelectionChanged">
+        <NavigationView 
+            x:Name="nvSample"
+            Grid.Row="1"
+            PaneTitle="GymPOS"
+            SelectionFollowsFocus="Enabled"
+            PaneDisplayMode="Auto"
+            IsBackButtonVisible="Collapsed"
+            IsPaneOpen="True"
+            CompactPaneLength="60"
+            SelectionChanged="nvSample_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Dashboard" Tag="SamplePage1">
+                <NavigationViewItem x:Name="nvDashboard" Content="Dashboard" Tag="SamplePage1">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE80F;" FontSize="24"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="Clientes" Tag="SamplePage2">
+                <NavigationViewItem x:Name="nvClientes" Content="Gestionar Clientes" Tag="SamplePage2">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE77B;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="Membresías" Tag="SamplePage4">
+                <NavigationViewItem x:Name="nvMembresias" Content="Membresías" Tag="SamplePage4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE8C7;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="Subscripcion" Tag="SamplePage3">
+                <NavigationViewItem x:Name="nvSubscripcion" Content="Subscripcion" Tag="SamplePage3">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE895;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="Asistencia" Tag="SamplePage5">
+                <NavigationViewItem x:Name="nvAsistencia" Content="Asistencia" Tag="SamplePage5">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xF0B5;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="Caja" Tag="SamplePage6">
+                <NavigationViewItem x:Name="nvCaja" Content="Gestionar caja" Tag="SamplePage6">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE825;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="Ventas" Tag="SamplePage7">
+                <NavigationViewItem x:Name="nvVentas" Content="Venta de productos" Tag="SamplePage7">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE7BF;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="Gestionar Productos" Tag="SamplePage8">
+                <NavigationViewItem x:Name="nvProductos" Content="Gestionar Productos" Tag="SamplePage8">
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE7BF;" />
+                        <FontIcon Glyph="&#xE719;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="Gestionar Usuarios" Tag="SamplePage9">
+                <NavigationViewItem x:Name="nvUsuarios" Content="Gestionar Usuarios" Tag="SamplePage9">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE8FA;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItem x:Name="nvGestionarMembresia" Content="Gestionar Membresia" Tag="SamplePage10">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE70C;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
 
             </NavigationView.MenuItems>
             <Frame x:Name="contentFrame"/>
+            <NavigationView.PaneFooter>
+                <Border Padding="12,8,12,12"
+                        BorderThickness="0,1,0,0"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                    <Grid ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Avatar clickeable -->
+                        <Button 
+                            Grid.Column="0"
+                            x:Name="BtnPerfil"
+                            Click="BtnPerfil_Click"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="0"
+                            CornerRadius="18"
+                            ToolTipService.ToolTip="Ver perfil">
+                            <Border 
+                                Width="36" Height="36"
+                                CornerRadius="18"
+                                Background="{ThemeResource AccentAAFillColorDefaultBrush}">
+                                <FontIcon
+                                    Glyph="&#xE77B;"
+                                    FontSize="12"
+                                    Foreground="White"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                            </Border>
+                        </Button>
+
+                        <!-- Nombre y rol -->
+                        <StackPanel 
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="1">
+                            <TextBlock 
+                                x:Name="HeaderUserName"
+                                Text="Usuario"
+                                FontSize="13"
+                                FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis"
+                                Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                            <TextBlock x:Name="HeaderUserRole"
+                           Text="Rol"
+                           FontSize="11"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+
+                        <!-- Logout -->
+                        <Button 
+                            Grid.Column="2"
+                            x:Name="BtnLogout"
+                            Click="BtnLogout_Click"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            CornerRadius="6"
+                            Padding="6"
+                            ToolTipService.ToolTip="Cerrar sesión"
+                            VerticalAlignment="Center">
+                            <FontIcon
+                                Glyph="&#xF3B1;"
+                                FontSize="16"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </Button>
+                    </Grid>
+                </Border>
+            </NavigationView.PaneFooter>
         </NavigationView>
     </Grid>
 </Window>
