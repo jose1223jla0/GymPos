@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GymPos.Models;
 using GymPos.Repository;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GymPos.ViewModels.ProductoVM;
 
-public partial class EditProductoViewModel : ObservableObject
+public partial class CreateProductoViewModel : ObservableObject
 {
     private readonly IRepositoryProducto _repositoryProducto;
     private readonly IRepositoryCategoria _repositoryCategoria;
@@ -17,11 +18,13 @@ public partial class EditProductoViewModel : ObservableObject
 
     public ObservableCollection<Categoria> Categorias { get; } = new();
 
-    [ObservableProperty] private int idProducto;
     [ObservableProperty] private string nombreProducto = string.Empty;
     [ObservableProperty] private int stockProducto;
-    [ObservableProperty]
-    private decimal precioProducto;
+    [ObservableProperty] private decimal precioProducto;
+
+    // Validación para stock
+    [ObservableProperty] private bool stockValido;
+    [ObservableProperty] private string stockMensaje = string.Empty;
 
     public double PrecioProductoDouble
     {
@@ -29,9 +32,14 @@ public partial class EditProductoViewModel : ObservableObject
         set => PrecioProducto = (decimal)value;
     }
 
+    partial void OnPrecioProductoChanged(decimal value)
+    {
+        OnPropertyChanged(nameof(PrecioProductoDouble));
+        ValidatePrecio(value);
+    }
 
-    [ObservableProperty] private bool estadoProducto = true;
     [ObservableProperty] private Categoria? categoriaSeleccionada;
+    [ObservableProperty] private bool isLoading;
     [ObservableProperty] private string mensajeError = string.Empty;
     [ObservableProperty] private bool hasError;
     // Validaciones en tiempo real
@@ -43,16 +51,9 @@ public partial class EditProductoViewModel : ObservableObject
     [ObservableProperty] private string categoriaMensaje = string.Empty;
     [ObservableProperty] private bool puedeGuardar;
 
-    // Validación para stock (similar al CreateProductoViewModel)
-    [ObservableProperty] private bool stockValido;
-    [ObservableProperty] private string stockMensaje = string.Empty;
+    public event EventHandler? ProductoCreado;
 
-    // true = editar, false = agregar
-    [ObservableProperty] private bool isEditMode;
-
-    public string TituloDialogo => IsEditMode ? "Editar Producto" : "Agregar Producto";
-
-    public EditProductoViewModel(
+    public CreateProductoViewModel(
         IRepositoryProducto repositoryProducto,
         IRepositoryCategoria repositoryCategoria,
         INotificationService notificationService)
@@ -60,61 +61,6 @@ public partial class EditProductoViewModel : ObservableObject
         _repositoryProducto = repositoryProducto;
         _repositoryCategoria = repositoryCategoria;
         _notificationService = notificationService;
-    }
-
-    public event EventHandler? ProductoActualizado;
-
-    public async Task LoadCategoriasAsync()
-    {
-        var cats = await _repositoryCategoria.ObtenerActivasAsync();
-        Categorias.Clear();
-        foreach (var c in cats)
-            Categorias.Add(c);
-    }
-
-    /// <summary>Prepara el ViewModel para editar un producto existente.</summary>
-    public async Task CargarParaEditar(Producto producto)
-    {
-        IsEditMode = true;
-        await LoadCategoriasAsync();
-
-        IdProducto = producto.IdProducto;
-        NombreProducto = producto.NombreProducto;
-        StockProducto = producto.StockProducto;
-        PrecioProducto = producto.PrecioProducto;
-        EstadoProducto = producto.EstadoProducto;
-        CategoriaSeleccionada = producto.Categoria ?? FindCategoria(producto.IdCategoria);
-
-        // Ejecutar validaciones iniciales para mostrar mensajes en la UI
-        ValidateNombre(NombreProducto);
-        ValidateCategoria(CategoriaSeleccionada);
-        ValidatePrecio(PrecioProducto);
-        // Validar stock
-        if (StockProducto < 0)
-        {
-            StockValido = false;
-            StockMensaje = "El stock no puede ser negativo.";
-        }
-        else
-        {
-            StockValido = true;
-            StockMensaje = string.Empty;
-        }
-        UpdateCanSave();
-    }
-
-    /// <summary>Prepara el ViewModel para agregar un producto nuevo.</summary>
-    public async Task CargarParaAgregar()
-    {
-        IsEditMode = false;
-        await LoadCategoriasAsync();
-
-        IdProducto = 0;
-        NombreProducto = string.Empty;
-        StockProducto = 0;
-        PrecioProducto = 0;
-        EstadoProducto = true;
-        CategoriaSeleccionada = null;
     }
 
     private void ValidateNombre(string value)
@@ -149,7 +95,7 @@ public partial class EditProductoViewModel : ObservableObject
 
     private void ValidatePrecio(decimal value)
     {
-        // No permitir números negativos; 0 se considera válido en la validación en tiempo real
+        // No permitir números negativos; 0 se considera válido
         if (value < 0)
         {
             PrecioValido = false;
@@ -180,6 +126,7 @@ public partial class EditProductoViewModel : ObservableObject
 
     partial void OnStockProductoChanged(int value)
     {
+        // No permitir valores negativos en stock
         if (value < 0)
         {
             StockValido = false;
@@ -193,24 +140,29 @@ public partial class EditProductoViewModel : ObservableObject
         UpdateCanSave();
     }
 
-    partial void OnPrecioProductoChanged(decimal value)
+    public async Task LoadCategoriasAsync()
     {
-        OnPropertyChanged(nameof(PrecioProductoDouble));
-        ValidatePrecio(value);
+        var cats = await _repositoryCategoria.ObtenerActivasAsync();
+        Categorias.Clear();
+        foreach (var c in cats)
+            Categorias.Add(c);
     }
 
-    private Categoria? FindCategoria(int id)
+    public async Task CargarParaAgregar()
     {
-        foreach (var c in Categorias)
-            if (c.IdCategoria == id) return c;
-        return null;
+        await LoadCategoriasAsync();
+        NombreProducto = string.Empty;
+        StockProducto = 0;
+        PrecioProducto = 0;
+        CategoriaSeleccionada = null;
+        HasError = false;
+        MensajeError = string.Empty;
     }
 
     [RelayCommand]
     public async Task GuardarProducto()
     {
         HasError = false;
-        MensajeError = string.Empty;
         if (string.IsNullOrWhiteSpace(NombreProducto))
         {
             MensajeError = "El nombre del producto es obligatorio.";
@@ -218,7 +170,7 @@ public partial class EditProductoViewModel : ObservableObject
             _notificationService.ShowWarning("Validación", MensajeError);
             return;
         }
-            if (CategoriaSeleccionada == null)
+        if (CategoriaSeleccionada == null)
         {
             MensajeError = "Selecciona una categoría.";
             HasError = true;
@@ -233,38 +185,43 @@ public partial class EditProductoViewModel : ObservableObject
             return;
         }
 
+        IsLoading = true;
         try
         {
             var producto = new Producto
             {
-                IdProducto = IdProducto,
                 IdCategoria = CategoriaSeleccionada.IdCategoria,
                 NombreProducto = NombreProducto.Trim(),
                 StockProducto = StockProducto,
                 PrecioProducto = PrecioProducto,
-                EstadoProducto = EstadoProducto
+                EstadoProducto = true
             };
 
-            if (IsEditMode)
-            {
-                await _repositoryProducto.EditarProducto(producto);
-                _notificationService.ShowSuccess("Producto actualizado",
-                    $"\"{NombreProducto}\" se actualizó correctamente.");
-                HasError = false;
-                MensajeError = string.Empty;
-                ProductoActualizado?.Invoke(this, EventArgs.Empty);
-            }
-            else
-            {
-                await _repositoryProducto.CrearNuevoProducto(producto);
-                _notificationService.ShowSuccess("Producto agregado",
-                    $"\"{NombreProducto}\" se agregó correctamente.");
-            }
+            await _repositoryProducto.CrearNuevoProducto(producto);
+            _notificationService.ShowSuccess("Producto agregado",
+                $"\"{NombreProducto}\" se agregó correctamente.");
+            ProductoCreado?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
         {
+            MensajeError = ex.Message;
+            HasError = true;
             _notificationService.ShowError("Error al guardar", ex.Message);
-            throw; // relanzar para que el diálogo no se cierre
+            throw;
         }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void LimpiarFormulario()
+    {
+        NombreProducto = string.Empty;
+        StockProducto = 0;
+        PrecioProducto = 0;
+        CategoriaSeleccionada = null;
+        HasError = false;
+        MensajeError = string.Empty;
     }
 }

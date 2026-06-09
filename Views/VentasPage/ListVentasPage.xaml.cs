@@ -4,21 +4,24 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
+
 namespace GymPos.Views.VentasPage;
 
 public sealed partial class ListVentasPage : Page
 {
     public VentaViewModel ViewModel { get; }
+
     public ListVentasPage()
     {
         InitializeComponent();
         ViewModel = App.Services!.GetRequiredService<VentaViewModel>();
-        DataContext = this; 
+        DataContext = this;
     }
 
     private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        ViewModel?.GetType();
+        // Aquí puedes disparar la búsqueda si usas debounce, por ahora el binding
+        // TwoWay sobre TerminoBusqueda ya lo maneja automáticamente.
     }
 
     protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -26,15 +29,16 @@ public sealed partial class ListVentasPage : Page
         base.OnNavigatedTo(e);
 
         if (e.Parameter is int idCaja)
-        {
             ViewModel.IdCajaActiva = idCaja;
-        }
 
         await ViewModel.CargarDatosAsync();
     }
 
     private async void OnRegistrarVentaClick(object sender, RoutedEventArgs e)
     {
+        // Cierra el flyout antes de mostrar el diálogo para evitar solapamiento visual
+        CarritoFlyout.Hide();
+
         var dialog = new ContentDialog
         {
             Title = "Confirmar venta",
@@ -46,6 +50,7 @@ public sealed partial class ListVentasPage : Page
         };
 
         var result = await dialog.ShowAsync();
+
         if (result == ContentDialogResult.Primary)
         {
             await ViewModel.RegistrarVentaAsync();

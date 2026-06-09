@@ -45,19 +45,19 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem x:Name="nvMembresias" Content="Membresías" Tag="SamplePage4">
+                <NavigationViewItem x:Name="nvMembresias" Content="lista de membresías" Tag="SamplePage4">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE8C7;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem x:Name="nvSubscripcion" Content="Subscripcion" Tag="SamplePage3">
+                <NavigationViewItem x:Name="nvSubscripcion" Content="Lista de subscripciones" Tag="SamplePage3">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE895;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem x:Name="nvAsistencia" Content="Asistencia" Tag="SamplePage5">
+                <NavigationViewItem x:Name="nvAsistencia" Content="Pasar asistencia" Tag="SamplePage5">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xF0B5;" />
                     </NavigationViewItem.Icon>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UserControl
-    x:Class="GymPos.Views.ProductoPage.EditProductoPage"
+    x:Class="GymPos.Views.ProductoPage.CreateProductoPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:GymPos.Views.ProductoPage"
@@ -10,24 +10,28 @@
 
     <Grid Width="400">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel MaxWidth="420"
-                        HorizontalAlignment="Center"
-                        Padding="16">
-                <!-- Encabezado -->
-                <StackPanel Spacing="6"
-                            Margin="0,0,0,5">
+            <StackPanel 
+                HorizontalAlignment="Center"
+                Padding="5">
 
-                    <FontIcon Glyph="&#xE70F;"
-                              FontSize="28"
+                <!-- Encabezado -->
+                <StackPanel Spacing="4"
+                            Margin="0,0,0,12">
+
+                    <FontIcon Glyph="&#xEC47;"
+                              FontSize="32"
                               HorizontalAlignment="Center"
                               Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
-                    <TextBlock Text="Editar producto"
-                               FontSize="20"
+
+                    <TextBlock Text="Agregar producto"
+                               FontSize="24"
                                FontWeight="SemiBold"
                                HorizontalAlignment="Center" />
-                    <TextBlock Text="Actualiza la información del producto"
+
+                    <TextBlock Text="Ingrese la información del producto"
                                Opacity="0.7"
                                HorizontalAlignment="Center" />
+
                 </StackPanel>
 
                 <!-- Error -->
@@ -35,13 +39,14 @@
                 <InfoBar IsOpen="{Binding HasError}"
                          IsClosable="False"
                          Severity="Error"
-                         CornerRadius="8"
                          Margin="0,0,0,12"
+                         CornerRadius="8"
                          Content="{Binding MensajeError}" />
 
                 <!-- Nombre -->
 
-                <StackPanel Spacing="4">
+                <StackPanel Spacing="4"
+                            Margin="0,8,0,0">
 
                     <StackPanel Orientation="Horizontal"
                                 Spacing="6">
@@ -56,9 +61,9 @@
                     </StackPanel>
 
                     <TextBox x:Name="TxtNombre"
-                             Width="380"
                              Text="{Binding NombreProducto, Mode=TwoWay}"
-                             PlaceholderText="Nombre del producto"
+                             Width="380"
+                             PlaceholderText="Ej: Proteína Whey 1kg"
                              CornerRadius="8"
                              TextChanged="TxtNombre_TextChanged" />
 
@@ -74,6 +79,7 @@
                                    FontSize="12"
                                    Foreground="Green"
                                    Visibility="{Binding NombreValido, Converter={StaticResource BoolToVisibilityConverter}}" />
+
                     </StackPanel>
 
                 </StackPanel>
@@ -81,24 +87,29 @@
                 <!-- Categoría -->
 
                 <StackPanel Spacing="4"
-                            Margin="0,12,0,0">
+                            Margin="0,6,0,0">
 
                     <StackPanel Orientation="Horizontal"
                                 Spacing="6">
+
                         <FontIcon Glyph="&#xE8D2;"
                                   Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
+
                         <TextBlock Text="Categoría *"
                                    FontSize="12"
                                    Opacity="0.7" />
+
                     </StackPanel>
 
                     <ComboBox x:Name="CmbCategoria"
-                              Width="380"
                               ItemsSource="{Binding Categorias}"
                               SelectedItem="{Binding CategoriaSeleccionada, Mode=TwoWay}"
+                              Width="380"
                               DisplayMemberPath="NombreCategoria"
+                              PlaceholderText="Seleccione una categoría"
                               CornerRadius="8"
                               SelectionChanged="CmbCategoria_SelectionChanged" />
+
                     <StackPanel Orientation="Horizontal"
                                 Spacing="8">
 
@@ -106,10 +117,12 @@
                                    FontSize="12"
                                    Foreground="Red"
                                    Visibility="{Binding CategoriaValida, Converter={StaticResource InvertedBoolToVisConverter}}" />
+
                         <TextBlock Text="✓ Correcto"
                                    FontSize="12"
                                    Foreground="Green"
                                    Visibility="{Binding CategoriaValida, Converter={StaticResource BoolToVisibilityConverter}}" />
+
                     </StackPanel>
 
                 </StackPanel>
@@ -117,11 +130,14 @@
                 <!-- Stock -->
 
                 <StackPanel Spacing="4"
-                            Margin="0,12,0,0">
+                            Margin="0,6,0,0">
+
                     <StackPanel Orientation="Horizontal"
                                 Spacing="6">
+
                         <FontIcon Glyph="&#xE8B7;"
                                   Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
+
                         <TextBlock Text="Stock *"
                                    FontSize="12"
                                    Opacity="0.7" />
@@ -154,31 +170,38 @@
                 <!-- Precio -->
 
                 <StackPanel Spacing="4"
-                            Margin="0,12,0,0">
+                            Margin="0,6,0,0">
 
                     <StackPanel Orientation="Horizontal"
                                 Spacing="6">
+
                         <FontIcon Glyph="&#xEAFD;"
                                   Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
+
                         <TextBlock Text="Precio (S/) *"
                                    FontSize="12"
                                    Opacity="0.7" />
+
                     </StackPanel>
 
                     <NumberBox x:Name="NbPrecio"
                                Value="{Binding PrecioProductoDouble, Mode=TwoWay}"
                                Minimum="0"
                                ValueChanged="NbPrecio_ValueChanged" />
+
                     <StackPanel Orientation="Horizontal"
                                 Spacing="8">
+
                         <TextBlock Text="{Binding PrecioMensaje}"
                                    FontSize="12"
                                    Foreground="Red"
                                    Visibility="{Binding PrecioValido, Converter={StaticResource InvertedBoolToVisConverter}}" />
+
                         <TextBlock Text="✓ Correcto"
                                    FontSize="12"
                                    Foreground="Green"
                                    Visibility="{Binding PrecioValido, Converter={StaticResource BoolToVisibilityConverter}}" />
+
                     </StackPanel>
 
                 </StackPanel>
@@ -186,8 +209,8 @@
                 <!-- Loading -->
 
                 <ProgressBar x:Name="LoadingBar"
-                             Height="4"
                              Margin="0,16,0,0"
+                             Height="4"
                              IsIndeterminate="True"
                              Visibility="Collapsed" />
 

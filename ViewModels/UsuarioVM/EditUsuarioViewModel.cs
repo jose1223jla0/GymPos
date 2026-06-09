@@ -5,9 +5,7 @@ using GymPos.Repository;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 namespace GymPos.ViewModels.UsuarioVM;
-
 public partial class EditUsuarioViewModel : ObservableObject
 {
     private readonly IRepositoryUsuario _repositoryUsuario;

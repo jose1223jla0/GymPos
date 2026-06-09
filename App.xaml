@@ -18,6 +18,7 @@
             <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <conv:BoolToVisibilityInverseConverter x:Key="InverseBoolToVis"/>
             <conv:InvertedBoolToVisConverter x:Key="InvertedBoolToVis"/>
+            <conv:InvertedBoolToVisConverter x:Key="InvertedBoolToVisConverter"/>
             <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
             <conv:InvertedBooleanConverter x:Key="InvertedBooleanConverter"/>
             <conv:AsistenciaTextConverter x:Key="AsistenciaTextConverter"/>
@@ -30,6 +31,10 @@
             <conv:PrecioConverter x:Key="PrecioConverter"/>
             <conv:EstadoToColorConverter x:Key="EstadoToColorConverter"/>
             <conv:EstadoProductoConverter x:Key="EstadoProductoConverter"/>
+            <conv:BoolToBrushConverter x:Key="BoolToBrushConverter"/>
+            <conv:StockToBrushConverter x:Key="StockToBrushConverter"/>
+            <conv:IntGreaterThanOneConverter x:Key="IntGreaterThanOneConverter"/>
+            <conv:IntLessThanTotalPagesConverter x:Key="IntLessThanTotalPagesConverter"/>
             <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>

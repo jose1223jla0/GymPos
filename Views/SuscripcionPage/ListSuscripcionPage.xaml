@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Page
+    x:Name="Root"
     x:Class="GymPos.Views.SuscripcionPage.ListSuscripcionPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -19,7 +20,9 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
@@ -29,11 +32,17 @@
                        FontSize="16"/>
         </StackPanel>
 
+        <!-- BUSCADOR -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,6,0,6">
+            <TextBox Width="360" PlaceholderText="Buscar por cliente o membresía..."
+                     Text="{x:Bind ViewModel.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
         <!-- TABLEVIEW -->
         <tv:TableView
             x:Name="RootTable"
-            Grid.Row="1"
-            ItemsSource="{Binding ListSuscripciones}"
+            Grid.Row="2"
+            ItemsSource="{x:Bind ViewModel.ListSuscripciones}"
             FontSize="13"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -128,6 +137,15 @@
 
             </tv:TableView.Columns>
         </tv:TableView>
+
+        <!-- PAGINACIÓN -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
+            <Button Content="Anterior" Command="{x:Bind ViewModel.PrevPageCommand}" />
+            <TextBlock VerticalAlignment="Center" Text="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" />
+            <TextBlock VerticalAlignment="Center" Text=" de " />
+            <TextBlock VerticalAlignment="Center" Text="{x:Bind ViewModel.TotalPages, Mode=OneWay}" />
+            <Button Content="Siguiente" Command="{x:Bind ViewModel.NextPageCommand}" />
+        </StackPanel>
 
         <!--<ContentDialog 
                 x:Name="ProductoDialog"

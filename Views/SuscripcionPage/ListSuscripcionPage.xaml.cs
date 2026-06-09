@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace GymPos.Views.SuscripcionPage;
 public sealed partial class ListSuscripcionPage : Page
 {
-    public ListSuscripcionViewModel ViewModel;
+    public ListSuscripcionViewModel ViewModel { get; }
     public ListSuscripcionPage()
     {
         InitializeComponent();
-        ViewModel=App.Services!.GetRequiredService<ListSuscripcionViewModel>();
+        ViewModel = App.Services!.GetRequiredService<ListSuscripcionViewModel>();
         DataContext = ViewModel;
         Loaded += SuscripcionListPage_Loaded;
     }

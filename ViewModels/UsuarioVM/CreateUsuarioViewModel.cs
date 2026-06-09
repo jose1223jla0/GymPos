@@ -19,6 +19,16 @@ public partial class CreateUsuarioViewModel : ObservableObject
     [ObservableProperty] private string confirmarPassword = string.Empty;
     [ObservableProperty] private string estadoCoincidenciaPassword = "none";
     [ObservableProperty] private bool estadoUsuario = true;
+    // Validaciones en tiempo real
+    [ObservableProperty] private bool nombreValido = false;
+    [ObservableProperty] private string nombreMensaje = string.Empty;
+    [ObservableProperty] private bool apellidosValido = false;
+    [ObservableProperty] private string apellidosMensaje = string.Empty;
+    [ObservableProperty] private bool usernameDniValido = false;
+    [ObservableProperty] private string usernameDniMensaje = string.Empty;
+    [ObservableProperty] private bool passwordValido = false;
+    [ObservableProperty] private string passwordMensaje = string.Empty;
+    [ObservableProperty] private bool puedeGuardar = false;
     [ObservableProperty] private Rol rolSeleccionado = Rol.Recepcionista;
     [ObservableProperty] private bool isLoading = false;
     [ObservableProperty] private string mensajeError = string.Empty;
@@ -31,6 +41,22 @@ public partial class CreateUsuarioViewModel : ObservableObject
     public CreateUsuarioViewModel(IRepositoryUsuario repositoryUsuario)
     {
         _repositoryUsuario = repositoryUsuario;
+    }
+
+    partial void OnNombreUsuarioChanged(string value)
+    {
+        ValidateNombre(value);
+    }
+
+    partial void OnApellidosUsuarioChanged(string value)
+    {
+        ValidateApellidos(value);
+    }
+
+    partial  void OnUsernameDniChanged(string value)
+    {
+        // lanzar validación asíncrona para chequear duplicados
+        _ = ValidateUsernameDniAsync(value);
     }
 
     partial void OnPasswordChanged(string value)
@@ -59,6 +85,25 @@ public partial class CreateUsuarioViewModel : ObservableObject
         {
             EstadoCoincidenciaPassword = "error";
         }
+
+        // validación flexible: mínimo 4 caracteres
+        if (string.IsNullOrEmpty(Password))
+        {
+            PasswordValido = false;
+            PasswordMensaje = "La contraseña es obligatoria.";
+        }
+        else if (Password.Length < 4)
+        {
+            PasswordValido = false;
+            PasswordMensaje = "La contraseña debe tener al menos 4 caracteres.";
+        }
+        else
+        {
+            PasswordValido = true;
+            PasswordMensaje = string.Empty;
+        }
+
+        UpdateCanSave();
     }
 
     /// <summary>
@@ -69,23 +114,16 @@ public partial class CreateUsuarioViewModel : ObservableObject
     public async Task GuardarAsync()
     {
         HasError = false;
-
-        if (string.IsNullOrWhiteSpace(NombreUsuario) || string.IsNullOrWhiteSpace(ApellidosUsuario) ||
-            string.IsNullOrWhiteSpace(UsernameDni) || string.IsNullOrWhiteSpace(Password))
+        // Validaciones finales (usar las reglas en tiempo real)
+        if (!NombreValido || !ApellidosValido || !UsernameDniValido || !PasswordValido)
         {
-            MostrarError("Todos los campos son obligatorios.");
+            MostrarError("Revisa los campos del formulario. Hay validaciones pendientes o erróneas.");
             return;
         }
 
-        if (Password != ConfirmarPassword)
+        if (EstadoCoincidenciaPassword != "ok")
         {
             MostrarError("Las contraseñas no coinciden.");
-            return;
-        }
-
-        if (Password.Length < 6)
-        {
-            MostrarError("La contraseña debe tener al menos 6 caracteres.");
             return;
         }
 
@@ -132,6 +170,71 @@ public partial class CreateUsuarioViewModel : ObservableObject
     {
         MensajeError = mensaje;
         HasError = true;
+    }
+
+    // Validaciones en tiempo real
+    private void ValidateNombre(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Trim().Length < 4)
+        {
+            NombreValido = false;
+            NombreMensaje = "El nombre debe tener al menos 4 caracteres.";
+        }
+        else
+        {
+            NombreValido = true;
+            NombreMensaje = string.Empty;
+        }
+    }
+
+    private void ValidateApellidos(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Trim().Length < 4)
+        {
+            ApellidosValido = false;
+            ApellidosMensaje = "Los apellidos deben tener al menos 4 caracteres.";
+        }
+        else
+        {
+            ApellidosValido = true;
+            ApellidosMensaje = string.Empty;
+        }
+    }
+
+    private async Task ValidateUsernameDniAsync(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Trim().Length < 4)
+        {
+            UsernameDniValido = false;
+            UsernameDniMensaje = "El DNI/Usuario debe tener al menos 4 caracteres.";
+            return;
+        }
+
+        try
+        {
+            var existente = await _repositoryUsuario.GetUsuarioByUsernameDniAsync(value.Trim());
+            if (existente != null)
+            {
+                UsernameDniValido = false;
+                UsernameDniMensaje = "El DNI/Usuario ya está registrado.";
+            }
+            else
+            {
+                UsernameDniValido = true;
+                UsernameDniMensaje = string.Empty;
+            }
+        }
+        catch
+        {
+            UsernameDniValido = false;
+            UsernameDniMensaje = "Error al validar el DNI/Usuario.";
+        }
+        UpdateCanSave();
+    }
+
+    private void UpdateCanSave()
+    {
+        PuedeGuardar = NombreValido && ApellidosValido && UsernameDniValido && PasswordValido && EstadoCoincidenciaPassword == "ok";
     }
     /// <summary>
     /// Limpia los campos del formulario y restablece el estado a los valores predeterminados.

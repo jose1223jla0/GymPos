@@ -5,7 +5,6 @@ using GymPos.Repository;
 using GymPos.Services;
 using System;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Globalization;
 
 public partial class CreateMembresiaViewModel : ObservableObject
@@ -17,7 +16,6 @@ public partial class CreateMembresiaViewModel : ObservableObject
     [ObservableProperty] private int sesiones;
     [ObservableProperty] private decimal precio;
 
-    // Expose Precio as a string for two-way TextBox binding in XAML
     public string PrecioDouble
     {
         get => Precio.ToString("F2", CultureInfo.CurrentCulture);
@@ -42,9 +40,7 @@ public partial class CreateMembresiaViewModel : ObservableObject
 
     public event Action? MembresiaCreada;
 
-    public CreateMembresiaViewModel(
-        IRepositoryMembresia repository,
-        INotificationService notification)
+    public CreateMembresiaViewModel(IRepositoryMembresia repository, INotificationService notification)
     {
         _repository = repository;
         _notification = notification;

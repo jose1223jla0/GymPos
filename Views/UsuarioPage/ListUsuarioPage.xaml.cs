@@ -20,24 +20,22 @@ public sealed partial class ListUsuarioPage : Page
 
     public ListUsuarioPage()
     {
-        InitializeComponent();
-
         ViewModel = App.Services!.GetRequiredService<ListUsuarioViewModel>();
         CreateViewModel = App.Services!.GetRequiredService<CreateUsuarioViewModel>();
         EditViewModel = App.Services!.GetRequiredService<EditUsuarioViewModel>();
         _notificationService = App.Services!.GetRequiredService<INotificationService>();
         _authService = App.Services!.GetRequiredService<IAuthService>();
-
+        InitializeComponent();
         DataContext = ViewModel;
-
         ViewModel.OpenAddDialogRequest += OnOpenAddDialogRequest;
         ViewModel.OpenEditDialogRequest += OnOpenEditDialogRequest;
         _notificationService.NotificationRequested += NotificationService_NotificationRequested;
+        CreateViewModel.UsuarioCreado += OnUsuarioCreado;
+        EditViewModel.UsuarioActualizado += OnUsuarioActualizado;
 
         Loaded += ListUsuarioPage_Loaded;
     }
 
-    // Visibility for the Add button: only visible when the current user is not a recepcionista
     public Microsoft.UI.Xaml.Visibility AddButtonVisibility => _authService.EsRecepcionista ? Microsoft.UI.Xaml.Visibility.Collapsed : Microsoft.UI.Xaml.Visibility.Visible;
     private async void ListUsuarioPage_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
@@ -47,7 +45,6 @@ public sealed partial class ListUsuarioPage : Page
     {
         if (sender is Button btn && btn.Tag is Usuario usuario)
         {
-            // Prevent recepcionista from editing users
             if (_authService.EsRecepcionista)
             {
                 _notificationService.ShowWarning("Permisos", "No tiene permisos para editar usuarios.");
@@ -66,32 +63,64 @@ public sealed partial class ListUsuarioPage : Page
     }
     private async void OnOpenAddDialogRequest()
     {
-        UserEditor.DataContext = CreateViewModel;
-        UsuarioDialog.XamlRoot = this.XamlRoot;
-        await UsuarioDialog.ShowAsync();
+        CreateUserEditor.DataContext = CreateViewModel;
+        CreateUsuarioDialog.XamlRoot = this.XamlRoot;
+        await CreateUsuarioDialog.ShowAsync();
     }
     private async void OnOpenEditDialogRequest(Usuario usuario)
     {
         EditViewModel.CargarUsuario(usuario);
-        UserEditor.SetupForEdit(EditViewModel);
-        UsuarioDialog.XamlRoot = this.XamlRoot;
-        await UsuarioDialog.ShowAsync();
+        EditUserEditor.SetupForEdit(EditViewModel);
+        EditUsuarioDialog.XamlRoot = this.XamlRoot;
+        await EditUsuarioDialog.ShowAsync();
     }
 
-    private async void UsuarioDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private async void CreateUsuarioDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        if (UserEditor.CurrentViewModel is CreateUsuarioViewModel cvm)
+        var def = args.GetDeferral();
+        try
         {
-            await cvm.GuardarAsync();
-            await ViewModel.InitializeAsync();
-            _notificationService.ShowSuccess("Usuario", "Usuario creado correctamente.");
+            await CreateViewModel.GuardarAsync();
         }
-        else if (UserEditor.CurrentViewModel is EditUsuarioViewModel evm)
+        catch
         {
-            await evm.GuardarAsync();
-            await ViewModel.InitializeAsync();
-            _notificationService.ShowSuccess("Usuario", "Usuario actualizado correctamente.");
+            args.Cancel = true;
         }
+        finally
+        {
+            def.Complete();
+        }
+    }
+
+    private async void EditUsuarioDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    {
+        var def = args.GetDeferral();
+        try
+        {
+            await EditViewModel.GuardarAsync();
+        }
+        catch
+        {
+            args.Cancel = true;
+        }
+        finally
+        {
+            def.Complete();
+        }
+    }
+
+    private async void OnUsuarioCreado(object? sender, EventArgs e)
+    {
+        CreateUsuarioDialog.Hide();
+        await ViewModel.InitializeAsync();
+        _notificationService.ShowSuccess("Usuario", "Usuario creado correctamente.");
+    }
+
+    private async void OnUsuarioActualizado(object? sender, EventArgs e)
+    {
+        EditUsuarioDialog.Hide();
+        await ViewModel.InitializeAsync();
+        _notificationService.ShowSuccess("Usuario", "Usuario actualizado correctamente.");
     }
 
     private void NotificationService_NotificationRequested(object? sender, Notification notification)

@@ -11,12 +11,14 @@ namespace GymPos.Repository;
 public interface IRepositoryProducto
 {
     Task<IEnumerable<Producto>> ObtenerActivosAsync();
+    Task<PagedResult<Producto>> ObtenerActivosPaginadoAsync(int page, int pageSize, string? searchTerm = null);
     Task<IEnumerable<Producto>> ObtenerPorCategoriaAsync(int idCategoria);
     Task<IEnumerable<Producto>> ObtenerPorNombreAsync(string termino, int? idCategoria = null);
     Task ActualizarStockAsync(int idProducto, int cantidad);
     Task<Producto?> ObtenerPorIdAsync(int id);
     Task CrearNuevoProducto(Producto producto);
     Task EditarProducto(Producto producto);
+    Task<List<Producto>> BuscarProductos(string query);
 
 }
 public class RepositoryProducto : IRepositoryProducto
@@ -33,6 +35,32 @@ public class RepositoryProducto : IRepositoryProducto
                                      .OrderBy(p => p.NombreProducto)
                                      .ToListAsync();
         return obtenerProductos;
+    }
+
+    public async Task<PagedResult<Producto>> ObtenerActivosPaginadoAsync(int page, int pageSize, string? searchTerm = null)
+    {
+        if (page < 1) page = 1;
+        if (pageSize <= 0) pageSize = 10;
+
+        var query = _context.Productos.Where(p => p.EstadoProducto).Include(p => p.Categoria).AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var t = searchTerm.Trim().ToLower();
+            query = query.Where(p => p.NombreProducto.ToLower().Contains(t));
+        }
+
+        query = query.OrderBy(p => p.NombreProducto);
+        var total = await query.CountAsync();
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+        return new PagedResult<Producto>
+        {
+            Items = items,
+            Page = page,
+            PageSize = pageSize,
+            TotalItems = total
+        };
     }
 
     public async Task<IEnumerable<Producto>>ObtenerPorCategoriaAsync(int idCategoria)
@@ -82,6 +110,18 @@ public class RepositoryProducto : IRepositoryProducto
         }
         producto.StockProducto -= cantidad;
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Producto>> BuscarProductos(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query)) return new List<Producto>();
+        var q = query.Trim().ToLower();
+        return await _context.Productos
+                    .Where(p => p.EstadoProducto && p.NombreProducto.ToLower().Contains(q))
+                    .Include(p => p.Categoria)
+                    .OrderBy(p => p.NombreProducto)
+                    .Take(10)
+                    .ToListAsync();
     }
     public async Task CrearNuevoProducto(Producto producto)
     {

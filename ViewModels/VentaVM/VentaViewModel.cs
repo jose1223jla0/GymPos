@@ -25,7 +25,6 @@ public partial class VentaViewModel : ObservableObject
 
     // ── Colecciones públicas ────────────────────────────────────────────────
     public ObservableCollection<ProductoViewModel> Productos { get; } = new();
-    // Caché interna de productos para poder filtrar por nombre sin volver a consultar
     private readonly List<ProductoViewModel> _productosCache = new();
     public ObservableCollection<CategoriaViewModel> Categorias { get; } = new();
     public ObservableCollection<CarritoItemViewModel> Carrito { get; } = new();
@@ -36,7 +35,6 @@ public partial class VentaViewModel : ObservableObject
     [ObservableProperty] private bool _ventaExitosa;
     [ObservableProperty] private int _idCajaActiva;
 
-    // Término de búsqueda para filtrar productos por nombre
     [ObservableProperty]
     private string? _terminoBusqueda;
 
@@ -93,11 +91,21 @@ public partial class VentaViewModel : ObservableObject
         RegistrarVentaCommand.NotifyCanExecuteChanged();
     }
 
+    // ── Helper: crea un CarritoItemViewModel con los comandos ya inyectados ─
+    // Así los botones +/- y Eliminar dentro del Flyout pueden usar
+    // {x:Bind AgregarCommand} / {x:Bind QuitarCommand} / {x:Bind EliminarCommand}
+    // directamente sobre el DataType del item, sin necesitar ElementName.
+    private CarritoItemViewModel CrearItem(Producto producto) => new(producto)
+    {
+        AgregarCommand = AgregarAlCarritoCommand,
+        QuitarCommand = QuitarDelCarritoCommand,
+        EliminarCommand = EliminarItemCommand,
+    };
+
     // ════════════════════════════════════════════════════════════════════════
     // COMANDOS
     // ════════════════════════════════════════════════════════════════════════
 
-    // ── Carga inicial ───────────────────────────────────────────────────────
     [RelayCommand]
     public async Task CargarDatosAsync()
     {
@@ -110,7 +118,6 @@ public partial class VentaViewModel : ObservableObject
 
             Categorias.Clear();
 
-            // Opción "Todos" siempre primera
             var todos = new CategoriaViewModel(new Categoria
             {
                 IdCategoria = 0,
@@ -136,7 +143,6 @@ public partial class VentaViewModel : ObservableObject
         }
     }
 
-    // ── Seleccionar categoría ───────────────────────────────────────────────
     [RelayCommand]
     public async Task SeleccionarCategoriaAsync(CategoriaViewModel cat)
     {
@@ -150,7 +156,6 @@ public partial class VentaViewModel : ObservableObject
             cat.IdCategoria == 0 ? null : (int?)cat.IdCategoria);
     }
 
-    // ── Refrescar grid de productos ─────────────────────────────────────────
     private async Task RefrescarProductosAsync(int? idCategoria = null)
     {
         IsLoading = true;
@@ -160,10 +165,7 @@ public partial class VentaViewModel : ObservableObject
             Productos.Clear();
             _productosCache.Clear();
             foreach (var p in lista)
-            {
-                var pvm = new ProductoViewModel(p);
-                _productosCache.Add(pvm);
-            }
+                _productosCache.Add(new ProductoViewModel(p));
 
             AplicarFiltroBusqueda();
         }
@@ -190,20 +192,13 @@ public partial class VentaViewModel : ObservableObject
 
         var termino = TerminoBusqueda.Trim().ToLowerInvariant();
         foreach (var p in _productosCache)
-        {
             if (p.NombreProducto != null && p.NombreProducto.ToLowerInvariant().Contains(termino))
                 Productos.Add(p);
-        }
     }
 
-    // Invocado automáticamente por el CommunityToolkit cuando TerminoBusqueda cambia
-    partial void OnTerminoBusquedaChanged(string? value)
-    {
-        AplicarFiltroBusqueda();
-    }
+    partial void OnTerminoBusquedaChanged(string? value) => AplicarFiltroBusqueda();
 
     // ── Agregar al carrito ──────────────────────────────────────────────────
-    // Acepta ProductoViewModel (tarjeta) o CarritoItemViewModel (botón + del carrito)
     [RelayCommand]
     public void AgregarAlCarrito(object parametro)
     {
@@ -220,7 +215,6 @@ public partial class VentaViewModel : ObservableObject
             }
 
             itemExistente.Cantidad++;
-            // descontar del grid de productos
             prodVm.StockProducto--;
             Recalcular();
             return;
@@ -239,19 +233,14 @@ public partial class VentaViewModel : ObservableObject
 
         if (item is not null)
         {
-            // si ya existe, aumentar comprobando stock disponible en el grid
-            if (producto.StockProducto <= 0)
-            {
-                MensajeError = $"Sin stock suficiente para '{producto.NombreProducto}'.";
-                return;
-            }
             item.Cantidad++;
             producto.StockProducto--;
         }
         else
         {
-            // crear nuevo item en carrito con el stock actual del producto
-            Carrito.Add(new CarritoItemViewModel(new Producto
+            // ← Usar CrearItem() en lugar de new CarritoItemViewModel(...)
+            //   para que los comandos queden inyectados desde el inicio.
+            Carrito.Add(CrearItem(new Producto
             {
                 IdProducto = producto.IdProducto,
                 NombreProducto = producto.NombreProducto,
@@ -260,7 +249,6 @@ public partial class VentaViewModel : ObservableObject
                 EstadoProducto = true,
                 IdCategoria = 0
             }));
-            // descontar 1 del grid
             producto.StockProducto--;
             OnPropertyChanged(nameof(Carrito));
         }
@@ -281,7 +269,6 @@ public partial class VentaViewModel : ObservableObject
         }
         else
         {
-            // devolver al stock la cantidad completa (1 en este caso)
             if (prodVm != null) prodVm.StockProducto++;
             Carrito.Remove(item);
             OnPropertyChanged(nameof(Carrito));
@@ -306,7 +293,6 @@ public partial class VentaViewModel : ObservableObject
     [RelayCommand]
     public void LimpiarCarrito()
     {
-        // devolver cantidades al stock del grid
         foreach (var it in Carrito.ToList())
         {
             var prodVm = Productos.FirstOrDefault(p => p.IdProducto == it.IdProducto);
@@ -336,22 +322,16 @@ public partial class VentaViewModel : ObservableObject
                 VentaDetalles = Carrito.Select(x => x.ToDetalle()).ToList()
             };
 
-            // Si no se indicó IdCajaActiva (0), obtener la caja abierta y usar su Id
             var idCajaAUsar = IdCajaActiva;
             if (idCajaAUsar == 0)
             {
                 var cajaAbierta = await _repoCaja.ObtenerCajaAbiertaAsync();
                 idCajaAUsar = cajaAbierta.IdCaja;
             }
-
-            var resultado = await _ventaService.CrearVentaAsync(venta, idCajaAUsar);
-
+            await _ventaService.CrearVentaAsync(venta, idCajaAUsar);
             VentaExitosa = true;
-
             LimpiarCarrito();
-
-            // Refrescar stock en el grid (la venta ya descontó en BD)
-            await RefrescarProductosAsync( _categoriaSeleccionada?.IdCategoria == 0  ? null : (int?)_categoriaSeleccionada?.IdCategoria);
+            await RefrescarProductosAsync( _categoriaSeleccionada?.IdCategoria == 0  ? null   : (int?)_categoriaSeleccionada?.IdCategoria);
         }
         catch (Exception ex)
         {

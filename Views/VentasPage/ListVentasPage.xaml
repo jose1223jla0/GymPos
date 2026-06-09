@@ -22,12 +22,18 @@
         <converters:NullOrEmptyToBoolConverter   x:Key="NotNullToBoolConverter"/>
     </Page.Resources>
 
+    <!--
+        Grid raíz: dos filas (buscador + contenido)
+        El carrito ya NO ocupa una columna fija; vive como Flyout
+        anclado al botón FAB posicionado sobre la UI.
+    -->
     <Grid Padding="24,20,24,24" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+
+        <!-- ══════ BARRA SUPERIOR ══════ -->
         <TextBox
             Grid.Row="0"
             PlaceholderText="Buscar productos......."
@@ -35,334 +41,376 @@
             Text="{x:Bind ViewModel.TerminoBusqueda, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             TextChanged="SearchTextBox_TextChanged"
             Margin="0,6,0,6"/>
-        <!-- Layout principal -->
-        <Grid Grid.Row="1" ColumnSpacing="16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="320"/>
-            </Grid.ColumnDefinitions>
 
-            <!-- ══════ PANEL PRODUCTOS ══════ -->
-            <Grid Grid.Column="0" RowSpacing="12">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+        <!-- ══════ PANEL PRODUCTOS (ancho completo) ══════ -->
+        <Grid Grid.Row="1" RowSpacing="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
+            <!-- Filtro categorías -->
+            <ScrollViewer Grid.Row="0"
+                          HorizontalScrollMode="Enabled"
+                          HorizontalScrollBarVisibility="Hidden"
+                          VerticalScrollMode="Disabled">
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.Categorias, Mode=OneWay}">
+                    <ItemsRepeater.Layout>
+                        <StackLayout Orientation="Horizontal" Spacing="8"/>
+                    </ItemsRepeater.Layout>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="vmCat:CategoriaViewModel">
+                            <ToggleButton
+                                Content="{x:Bind NombreCategoria}"
+                                IsChecked="{x:Bind IsSeleccionada, Mode=OneWay}"
+                                CornerRadius="16"
+                                Padding="14,6"
+                                FontSize="13"
+                                Command="{Binding DataContext.ViewModel.SeleccionarCategoriaCommand, ElementName=RootPage}"
+                                CommandParameter="{x:Bind}"/>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </ScrollViewer>
 
-                <!-- Filtro categorías -->
-                <ScrollViewer Grid.Row="0"
-                              HorizontalScrollMode="Enabled"
-                              HorizontalScrollBarVisibility="Hidden"
-                              VerticalScrollMode="Disabled">
-                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.Categorias, Mode=OneWay}">
-                        <ItemsRepeater.Layout>
-                            <StackLayout Orientation="Horizontal" Spacing="8"/>
-                        </ItemsRepeater.Layout>
-                        <ItemsRepeater.ItemTemplate>
-                            <DataTemplate x:DataType="vmCat:CategoriaViewModel">
-                                <ToggleButton
-                                    Content="{x:Bind NombreCategoria}"
-                                    IsChecked="{x:Bind IsSeleccionada, Mode=OneWay}"
-                                    CornerRadius="16"
-                                    Padding="14,6"
-                                    FontSize="13"
-                                    Command="{Binding DataContext.ViewModel.SeleccionarCategoriaCommand,  ElementName=RootPage}"
-                                    CommandParameter="{x:Bind}"/>
-                            </DataTemplate>
-                        </ItemsRepeater.ItemTemplate>
-                    </ItemsRepeater>
-                </ScrollViewer>
+            <!-- Spinner carga -->
+            <ProgressRing Grid.Row="1"
+                          IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                          Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVis}}"
+                          Width="48" Height="48"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"/>
 
-                <!-- Spinner -->
-                <ProgressRing Grid.Row="1"
-                              IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
-                              Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVis}}"
-                              Width="48" Height="48"
-                              HorizontalAlignment="Center"
-                              VerticalAlignment="Center"/>
+            <!-- Grid de productos -->
+            <ScrollViewer Grid.Row="2"
+                          Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource InverseBoolToVis}}">
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.Productos, Mode=OneWay}">
+                    <ItemsRepeater.Layout>
+                        <UniformGridLayout
+                            MinItemWidth="160"
+                            MinItemHeight="130"
+                            ItemsStretch="Fill"
+                            MinColumnSpacing="10" MinRowSpacing="10"/>
+                    </ItemsRepeater.Layout>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ProductoViewModel">
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Padding="0"
+                                CornerRadius="10"
+                                IsEnabled="{x:Bind TieneStock, Mode=OneWay}"
+                                Command="{Binding DataContext.ViewModel.AgregarAlCarritoCommand, ElementName=RootPage}"
+                                CommandParameter="{x:Bind}">
 
-                <!-- Grid de productos -->
-                <ScrollViewer Grid.Row="2"
-                              Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource InverseBoolToVis}}">
-                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.Productos, Mode=OneWay}">
-                        <ItemsRepeater.Layout>
-                            <UniformGridLayout
-                                MinItemWidth="160" 
-                                MinItemHeight="130"
-                                ItemsStretch="Fill"
-                                MinColumnSpacing="10" MinRowSpacing="10"/>
-                        </ItemsRepeater.Layout>
-                        <ItemsRepeater.ItemTemplate>
-                            <DataTemplate x:DataType="vm:ProductoViewModel">
-                                <Button
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    Padding="0"
-                                    CornerRadius="10"
-                                    IsEnabled="{x:Bind TieneStock, Mode=OneWay}"
-                                    Command="{Binding DataContext.ViewModel.AgregarAlCarritoCommand, ElementName=RootPage}"
-                                    CommandParameter="{x:Bind}">
-
-                                    <StackPanel Padding="14,12" Spacing="5">
-                                        <FontIcon 
-                                            Glyph="&#xE7BF;" 
-                                            FontSize="28"
-                                            HorizontalAlignment="Left"
-                                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
-                                        <TextBlock
-                                            Text="{x:Bind NombreProducto}"
-                                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                                            TextWrapping="Wrap" MaxLines="2"/>
-                                        <TextBlock
-                                            Text="{x:Bind PrecioFormateado}"
-                                            FontWeight="Bold"
-                                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                            FontSize="13"/>
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}"
-                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}">
-                                                <Run Text="Stock: "/>
-                                                <Run Text="{x:Bind StockProducto, Mode=OneWay}"/>
-                                            </TextBlock>
-
-                                            <Border 
-                                                Background="#C92079"
-                                                CornerRadius="6" Padding="4,2"
-                                                Visibility="{x:Bind StockProducto, Mode=OneWay,Converter={StaticResource ZeroToVis}}">
-                                                <TextBlock 
-                                                    Text="Sin stock"
-                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                    Foreground="#fff"/>
-                                            </Border>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsRepeater.ItemTemplate>
-                    </ItemsRepeater>
-                </ScrollViewer>
-            </Grid>
-
-            <!-- ══════ PANEL CARRITO ══════ -->
-            <Border Grid.Column="1"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="2" CornerRadius="12" Padding="16">
-                <Grid RowSpacing="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Header -->
-                    <Grid Grid.Row="0" Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0" 
-                                    VerticalAlignment="Center"
-                                    Spacing="15"
-                                    Orientation="Horizontal">
-                            <FontIcon Glyph="&#xE7BF;" FontSize="29" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
-                            <TextBlock Text="Carrito"
-                                       FontSize="16"
-                                       Style="{StaticResource SubtitleTextBlockStyle}"/>
-                        </StackPanel>
-
-                        <!-- Badge cantidad total -->
-                        <Border Background="{ThemeResource AccentFillColorDefaultBrush}"
-                                CornerRadius="8" 
-                                HorizontalAlignment="Right"
-                                Grid.Column="1"
-                                Width="50"
-                                Height="20" 
-                                Visibility="{x:Bind ViewModel.HayItems, Mode=OneWay,
-                                                 Converter={StaticResource BoolToVis}}">
-                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}"
-                                        FontSize="10"
-                                       TextAlignment="Center"
-                                        Foreground="White">
-                                    <Run Text="{x:Bind ViewModel.TotalItems, Mode=OneWay}"/>
-                                    <Run Text=" items"/>
-                            </TextBlock>
-                        </Border>
-
-                    </Grid>
-
-
-
-                    <!-- Lista / estado vacío -->
-                    <ScrollViewer Grid.Row="1"
-                                  VerticalScrollBarVisibility="Auto"
-                                  Margin="0,0,0,12">
-                        <Grid MinHeight="200">
-
-                            <!-- Vacío -->
-                            <StackPanel
-                                Visibility="{x:Bind ViewModel.HayItems, Mode=OneWay,
-                                             Converter={StaticResource InverseBoolToVis}}"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Spacing="8" Padding="0,40">
-                                <FontIcon Glyph="&#xE7BF;" FontSize="32"
-                                          HorizontalAlignment="Center"
-                                          Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
-                                <TextBlock Text="Agrega productos al carrito"
-                                           Style="{StaticResource CaptionTextBlockStyle}"
-                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                           HorizontalAlignment="Center"/>
-                            </StackPanel>
-
-                            <!-- Items -->
-                            <ItemsRepeater
-                                ItemsSource="{x:Bind ViewModel.Carrito, Mode=OneWay}"
-                                Visibility="{x:Bind ViewModel.HayItems, Mode=OneWay,
-                                             Converter={StaticResource BoolToVis}}">
-                                <ItemsRepeater.Layout>
-                                    <StackLayout Spacing="8"/>
-                                </ItemsRepeater.Layout>
-                                <ItemsRepeater.ItemTemplate>
-                                    <DataTemplate x:DataType="vm1:CarritoItemViewModel">
-                                        <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-                                                CornerRadius="8" Padding="10,8">
-                                            <Grid ColumnSpacing="8">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <!-- Info -->
-                                                <StackPanel Grid.Column="0" Spacing="2"
-                                                            VerticalAlignment="Center">
-                                                    <TextBlock
-                                                        Text="{x:Bind NombreProducto}"
-                                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                                        FontWeight="SemiBold"
-                                                        TextTrimming="CharacterEllipsis"/>
-                                                    <TextBlock
-                                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}">
-                                                        <Run Text="S/ " FontWeight="Bold"/>
-                                                        <Run Text="{x:Bind SubtotalFormateado, Mode=OneWay}" FontWeight="Bold"/>
-                                                    </TextBlock>
-                                                </StackPanel>
-
-                                                <!-- Cantidad -->
-                                                <StackPanel Grid.Column="1"
-                                                            Orientation="Horizontal"
-                                                            Spacing="4"
-                                                            VerticalAlignment="Center">
-                                                    <Button Content="−"
-                                                            Width="26" Height="26"
-                                                            Padding="0" CornerRadius="13"
-                                                            FontSize="15"
-                                                            Command="{Binding DataContext.ViewModel.QuitarDelCarritoCommand,
-                                                                      ElementName=RootPage}"
-                                                            CommandParameter="{x:Bind}"/>
-                                                    <TextBlock
-                                                        Text="{x:Bind Cantidad, Mode=OneWay}"
-                                                        VerticalAlignment="Center"
-                                                        MinWidth="20" TextAlignment="Center"
-                                                        Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                                    <Button Content="+"
-                                                            Width="26" Height="26"
-                                                            Padding="0" CornerRadius="13"
-                                                            FontSize="15"
-                                                            Command="{Binding DataContext.ViewModel.AgregarAlCarritoCommand,
-                                                                      ElementName=RootPage}"
-                                                            CommandParameter="{x:Bind}"/>
-                                                </StackPanel>
-
-                                                <!-- Eliminar -->
-                                                <Button 
-                                                    Grid.Column="2"
-                                                    Width="26" Height="26"
-                                                    Padding="0" VerticalAlignment="Center"
-                                                    Command="{Binding DataContext.ViewModel.EliminarItemCommand, ElementName=RootPage}"
-                                                    CommandParameter="{x:Bind}">
-                                                    <FontIcon Glyph="&#xE711;" FontSize="11"/>
-                                                </Button>
-                                            </Grid>
+                                <StackPanel Padding="14,12" Spacing="5">
+                                    <FontIcon
+                                        Glyph="&#xE7BF;"
+                                        FontSize="28"
+                                        HorizontalAlignment="Left"
+                                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                    <TextBlock
+                                        Text="{x:Bind NombreProducto}"
+                                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                                        TextWrapping="Wrap" MaxLines="2"/>
+                                    <TextBlock
+                                        Text="{x:Bind PrecioFormateado}"
+                                        FontWeight="Bold"
+                                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                        FontSize="13"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Style="{StaticResource CaptionTextBlockStyle}"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                            <Run Text="Stock: " Foreground="DarkBlue" FontWeight="Bold"/>
+                                            <Run Text="{x:Bind StockProducto, Mode=OneWay}" Foreground="DarkBlue" FontWeight="Bold"/>
+                                        </TextBlock>
+                                        <Border
+                                            Background="#C92079"
+                                            CornerRadius="6" Padding="4,2"
+                                            Visibility="{x:Bind StockProducto, Mode=OneWay, Converter={StaticResource ZeroToVis}}">
+                                            <TextBlock
+                                                Text="Sin stock"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Foreground="#fff"/>
                                         </Border>
-                                    </DataTemplate>
-                                </ItemsRepeater.ItemTemplate>
-                            </ItemsRepeater>
-                        </Grid>
-                    </ScrollViewer>
-
-                    <!-- Separador -->
-                    <Border 
-                        Grid.Row="2" Height="1"
-                        Background="{ThemeResource DividerStrokeColorDefaultBrush}"
-                        Margin="0,0,0,12"/>
-
-                    <!-- Total -->
-                    <Grid Grid.Row="3" Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock 
-                            Text="Total"
-                            VerticalAlignment="Center"/>
-                        <TextBlock 
-                            Grid.Column="1"
-                            FontWeight="Bold"
-                            FontSize="18"
-                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}">
-                            <Run Text="S/ "/>
-                            <Run Text="{x:Bind ViewModel.TotalFormateado, Mode=OneWay}"/>
-                        </TextBlock>
-                    </Grid>
-
-                    <!-- Error -->
-                    <InfoBar 
-                        Grid.Row="4"
-                        IsOpen="{x:Bind ViewModel.MensajeError, Mode=OneWay, Converter={StaticResource NotNullToBoolConverter}}"
-                        Message="{x:Bind ViewModel.MensajeError, Mode=OneWay}"
-                        Severity="Error"
-                        IsClosable="True"
-                        Margin="0,0,0,8"/>
-
-                    <!-- Botones -->
-                    <StackPanel Grid.Row="5" Spacing="8">
-                        <Button HorizontalAlignment="Stretch"
-                                Style="{StaticResource AccentButtonStyle}"
-                                Click="OnRegistrarVentaClick"
-                                IsEnabled="{x:Bind ViewModel.HayItems, Mode=OneWay}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <FontIcon Glyph="&#xE9F5;" FontSize="16"/>
-                                <TextBlock Text="Registrar venta"/>
-                            </StackPanel>
-                        </Button>
-                        <Button HorizontalAlignment="Stretch"
-                                Command="{x:Bind ViewModel.LimpiarCarritoCommand}"
-                                IsEnabled="{x:Bind ViewModel.HayItems, Mode=OneWay}">
-                            <TextBlock Text="Limpiar carrito"/>
-                        </Button>
-                    </StackPanel>
-                </Grid>
-            </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </ScrollViewer>
         </Grid>
 
-        <!-- ===================== INFOBAR FLOTANTE ===================== -->
+        <!-- ══════ FAB — botón flotante del carrito ══════
+             Posicionado en la esquina inferior derecha del Grid raíz.
+             El Flyout se abre hacia arriba gracias a Placement="Top".
+        -->
+        <Button
+            x:Name="FabCarrito"
+            Grid.Row="1"
+            Width="56" Height="56"
+            CornerRadius="28"
+            Padding="0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,4,4"
+            Style="{StaticResource AccentButtonStyle}"
+            ToolTipService.ToolTip="Ver carrito">
+
+            <!-- Botón con badge superpuesto -->
+            <Grid Width="56" Height="56">
+
+                <!-- Ícono carrito -->
+                <FontIcon
+                    Glyph="&#xE7BF;"
+                    FontSize="22"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+
+                <!-- Badge con cantidad de ítems -->
+                <Border
+                    x:Name="BadgeCarrito"
+                    Background="#D85A30"
+                    CornerRadius="10"
+                    MinWidth="20" Height="20"
+                    Padding="4,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,4,4,0"
+                    Visibility="{x:Bind ViewModel.HayItems, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                    <TextBlock
+                        Text="{x:Bind ViewModel.TotalItems, Mode=OneWay}"
+                        FontSize="10"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        TextAlignment="Center"
+                        VerticalAlignment="Center"/>
+                </Border>
+            </Grid>
+
+            <!-- ══════ FLYOUT CARRITO ══════ -->
+            <Button.Flyout>
+                <Flyout
+                    x:Name="CarritoFlyout"
+                    Placement="TopEdgeAlignedRight"
+                    ShouldConstrainToRootBounds="True">
+
+                    <Flyout.FlyoutPresenterStyle>
+                        <Style TargetType="FlyoutPresenter">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="CornerRadius" Value="12"/>
+                            <Setter Property="MinWidth" Value="300"/>
+                            <Setter Property="MaxWidth" Value="320"/>
+                            <Setter Property="MaxHeight" Value="480"/>
+                        </Style>
+                    </Flyout.FlyoutPresenterStyle>
+
+                    <!-- Contenido del panel carrito -->
+                    <Grid Width="320" Padding="16" RowSpacing="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <Grid Grid.Row="0" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Spacing="10"
+                                        Orientation="Horizontal">
+                                <FontIcon Glyph="&#xE7BF;" FontSize="22"
+                                          Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                <TextBlock Text="Carrito"
+                                           FontSize="16"
+                                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                            </StackPanel>
+
+                            <!-- Badge total items en header -->
+                            <Border Grid.Column="1"
+                                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                    CornerRadius="8"
+                                    HorizontalAlignment="Right"
+                                    MinWidth="50" Height="20"
+                                    Padding="6,0"
+                                    Visibility="{x:Bind ViewModel.HayItems, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}"
+                                           FontSize="10"
+                                           TextAlignment="Center"
+                                           Foreground="White">
+                                    <Run Text="{x:Bind ViewModel.TotalItems, Mode=OneWay}"/>
+                                    <Run Text=" items"/>
+                                </TextBlock>
+                            </Border>
+                        </Grid>
+
+                        <!-- Lista / estado vacío -->
+                        <ScrollViewer Grid.Row="1"
+                                      VerticalScrollBarVisibility="Auto"
+                                      MaxHeight="280"
+                                      Margin="0,0,0,12">
+                            <Grid MinHeight="100">
+
+                                <!-- Vacío -->
+                                <StackPanel
+                                    Visibility="{x:Bind ViewModel.HayItems, Mode=OneWay, Converter={StaticResource InverseBoolToVis}}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="8" Padding="0,24">
+                                    <FontIcon Glyph="&#xE7BF;" FontSize="32"
+                                              HorizontalAlignment="Center"
+                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                                    <TextBlock Text="Agrega productos al carrito"
+                                               Style="{StaticResource CaptionTextBlockStyle}"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               HorizontalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Items -->
+                                <ItemsRepeater
+                                    ItemsSource="{x:Bind ViewModel.Carrito, Mode=OneWay}"
+                                    Visibility="{x:Bind ViewModel.HayItems, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                    <ItemsRepeater.Layout>
+                                        <StackLayout Spacing="8"/>
+                                    </ItemsRepeater.Layout>
+                                    <ItemsRepeater.ItemTemplate>
+                                        <DataTemplate x:DataType="vm1:CarritoItemViewModel">
+                                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                                    CornerRadius="8" Padding="10,8">
+                                                <Grid ColumnSpacing="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!-- Info -->
+                                                    <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
+                                                        <TextBlock
+                                                            Text="{x:Bind NombreProducto}"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            FontWeight="SemiBold"
+                                                            TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}">
+                                                            <Run Text="S/ " FontWeight="Bold"/>
+                                                            <Run Text="{x:Bind SubtotalFormateado, Mode=OneWay}" FontWeight="Bold"/>
+                                                        </TextBlock>
+                                                    </StackPanel>
+
+                                                    <!-- Cantidad +/- -->
+                                                    <StackPanel Grid.Column="1"
+                                                                Orientation="Horizontal"
+                                                                Spacing="4"
+                                                                VerticalAlignment="Center">
+                                                        <Button Content="−"
+                                                                Width="26" Height="26"
+                                                                Padding="0" CornerRadius="13"
+                                                                FontSize="15"
+                                                                Command="{x:Bind QuitarCommand}"
+                                                                CommandParameter="{x:Bind}"/>
+                                                        <TextBlock
+                                                            Text="{x:Bind Cantidad, Mode=OneWay}"
+                                                            VerticalAlignment="Center"
+                                                            MinWidth="20" TextAlignment="Center"
+                                                            Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                                        <Button Content="+"
+                                                                Width="26" Height="26"
+                                                                Padding="0" CornerRadius="13"
+                                                                FontSize="15"
+                                                                Command="{x:Bind AgregarCommand}"
+                                                                CommandParameter="{x:Bind}"/>
+                                                    </StackPanel>
+
+                                                    <!-- Eliminar -->
+                                                    <Button
+                                                        Grid.Column="2"
+                                                        Width="26" Height="26"
+                                                        Padding="0" VerticalAlignment="Center"
+                                                        Command="{x:Bind EliminarCommand}"
+                                                        CommandParameter="{x:Bind}">
+                                                        <FontIcon Glyph="&#xE711;" FontSize="11"/>
+                                                    </Button>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsRepeater.ItemTemplate>
+                                </ItemsRepeater>
+                            </Grid>
+                        </ScrollViewer>
+
+                        <!-- Separador -->
+                        <Border Grid.Row="2" Height="1"
+                                Background="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                Margin="0,0,0,12"/>
+
+                        <!-- Total -->
+                        <Grid Grid.Row="3" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Total" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       FontWeight="Bold" FontSize="18"
+                                       Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}">
+                                <Run Text="S/ "/>
+                                <Run Text="{x:Bind ViewModel.TotalFormateado, Mode=OneWay}"/>
+                            </TextBlock>
+                        </Grid>
+
+                        <!-- Error -->
+                        <InfoBar
+                            Grid.Row="4"
+                            IsOpen="{x:Bind ViewModel.MensajeError, Mode=OneWay, Converter={StaticResource NotNullToBoolConverter}}"
+                            Message="{x:Bind ViewModel.MensajeError, Mode=OneWay}"
+                            Severity="Error"
+                            IsClosable="True"
+                            Margin="0,0,0,8"/>
+
+                        <!-- Botones acción -->
+                        <StackPanel Grid.Row="5" Spacing="8">
+                            <Button HorizontalAlignment="Stretch"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    Click="OnRegistrarVentaClick"
+                                    IsEnabled="{x:Bind ViewModel.HayItems, Mode=OneWay}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE9F5;" FontSize="16"/>
+                                    <TextBlock Text="Registrar venta"/>
+                                </StackPanel>
+                            </Button>
+                            <Button HorizontalAlignment="Stretch"
+                                    Command="{x:Bind ViewModel.LimpiarCarritoCommand}"
+                                    IsEnabled="{x:Bind ViewModel.HayItems, Mode=OneWay}">
+                                <TextBlock Text="Limpiar carrito"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+
+        <!-- ══════ INFOBAR FLOTANTE (notificación venta exitosa) ══════ -->
         <InfoBar
             x:Name="InfoBarNotificacion"
+            Grid.Row="1"
             Width="320"
             IsOpen="False"
             IsClosable="True"
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
-            Margin="0,20,20,0"
+            Margin="0,8,8,0"
             Severity="Success"/>
     </Grid>
 </Page>

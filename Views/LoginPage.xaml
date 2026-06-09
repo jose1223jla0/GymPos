@@ -10,87 +10,101 @@
     Background="Transparent">
 
     <Grid>
-        <!-- Fondo con gradiente -->
+        <!-- Fondo moderno -->
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="{ThemeResource ApplicationPageBackgroundThemeBrush}" Offset="0"/>
-                <GradientStop Color="{ThemeResource CardBackgroundFillColorDefault}" Offset="5"/>
+                <GradientStop Color="#071A24" Offset="0"/>
+                <GradientStop Color="#0C2D3A" Offset="0.5"/>
+                <GradientStop Color="#16485C" Offset="1"/>
             </LinearGradientBrush>
         </Grid.Background>
 
-        <!-- Card de login centrada -->
-        <Border
-            Width="420"
-            BorderBrush="{ThemeResource AccentAAFillColorDefaultBrush}"
-            BorderThickness="1"
-            Padding="40"
-            CornerRadius="16"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
+        <!-- Efectos decorativos -->
+        <Ellipse Width="500"
+                 Height="500"
+                 Fill="#1A3D5A"
+                 Opacity="0.15"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Top"
+                 Margin="-150,-150,0,0"/>
+
+        <Ellipse Width="400"
+                 Height="400"
+                 Fill="#3AA0FF"
+                 Opacity="0.08"
+                 HorizontalAlignment="Right"
+                 VerticalAlignment="Bottom"
+                 Margin="0,0,-100,-100"/>
+
+        <!-- Card Login -->
+        <Border Width="420" 
+                BorderBrush="{ThemeResource AccentAAFillColorDefaultBrush}" 
+                BorderThickness="1" 
+                Padding="40" CornerRadius="16" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center">
             <Border.Background>
                 <AcrylicBrush TintColor="#0A313D" TintOpacity="0.85" />
             </Border.Background>
             <Border.Shadow>
                 <ThemeShadow/>
             </Border.Shadow>
-
-            <StackPanel Spacing="0">
+            <StackPanel Spacing="5">
                 <!-- Icono y título -->
-                <FontIcon Glyph="&#xE8AA;"
-                          FontSize="48"
-                          HorizontalAlignment="Center"
-                          Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                <FontIcon Glyph="&#xE8AA;" 
+                          FontSize="48" 
+                          HorizontalAlignment="Center" 
+                          Foreground="{ThemeResource AccentFillColorDefaultBrush}" 
                           Margin="0,0,0,12"/>
-
-                <TextBlock Text="GymPOS"
-                           FontSize="32"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           Foreground="White"
-                           Margin="0,0,0,4"/>
-
-                <TextBlock Text="Sistema de Gestión"
-                           FontSize="13"
-                           HorizontalAlignment="Center"
-                           Opacity="0.6"
-                           Foreground="White"
-                           Margin="0,0,0,32"/>
-
+                <TextBlock Text="GymPOS" 
+                           FontSize="32" 
+                           FontWeight="Bold" 
+                           HorizontalAlignment="Center" 
+                           Foreground="White" Margin="0,0,0,4"/>
+                <TextBlock Text="Sistema de Gestión" 
+                           FontSize="13" 
+                           HorizontalAlignment="Center" 
+                           Opacity="0.6" 
+                           Foreground="White" 
+                           Margin="0,0,0,12"/>
                 <!-- Campo Usuario -->
-                <TextBlock Text="Usuario / DNI"
-                           FontSize="12"
-                           Foreground="White"
-                           Opacity="0.8"
+                <TextBlock Text="Usuario / DNI" 
+                           FontSize="12" 
+                           Foreground="White" 
+                           Opacity="0.8" 
                            Margin="0,0,0,6"/>
-                <TextBox x:Name="UserTextBox"
-                         PlaceholderText="Ingresa tu DNI o usuario"
-                         CornerRadius="8"
-                         Margin="0,0,0,16"
+                <TextBox x:Name="UserTextBox" 
+                         PlaceholderText="Ingresa tu DNI o usuario" 
+                         MaxLength="8" 
+                         CornerRadius="8" 
+                         Margin="0,0,0,6" 
+                         TextChanged="UserTextBox_TextChanged" 
                          KeyDown="TextBox_KeyDown"/>
-
+                <TextBlock x:Name="TxtErrorDni" 
+                           Foreground="Red" 
+                           FontSize="12" 
+                           Visibility="Collapsed" 
+                           Margin="0,0,0,16"/>
                 <!-- Campo Contraseña -->
-                <TextBlock Text="Contraseña"
-                           FontSize="12"
-                           Foreground="White"
-                           Opacity="0.8"
+                <TextBlock Text="Contraseña" 
+                           FontSize="12" 
+                           Foreground="White" 
+                           Opacity="0.8" 
                            Margin="0,0,0,6"/>
-                <PasswordBox x:Name="PasswordBox"
-                             PlaceholderText="Ingresa tu contraseña"
-                             CornerRadius="8"
-                             Margin="0,0,0,8"
+                <PasswordBox x:Name="PasswordBox" 
+                             PlaceholderText="Ingresa tu contraseña" 
+                             CornerRadius="8" 
+                             Margin="0,0,0,8" 
                              KeyDown="PasswordBox_KeyDown"/>
-
                 <!-- Error message -->
-                <InfoBar x:Name="ErrorBar"
-                         IsOpen="False"
+                <InfoBar x:Name="ErrorBar" 
+                         IsOpen="False" 
                          IsClosable="False"
-                         Severity="Error"
+                         Severity="Error" 
                          Margin="0,8,0,16"
                          CornerRadius="8"/>
-
                 <!-- Botón Ingresar -->
                 <Button x:Name="BtnLogin"
-                        Content="Ingresar"
                         HorizontalAlignment="Stretch"
                         CornerRadius="8"
                         Height="44"
@@ -98,21 +112,29 @@
                         FontWeight="SemiBold"
                         Click="BtnLogin_Click"
                         Style="{ThemeResource AccentButtonStyle}"
-                        Margin="0,0,0,16"/>
-
+                        Margin="0,0,0,16">
+                    <StackPanel Orientation="Horizontal"
+                        Spacing="8"
+                        HorizontalAlignment="Center">
+                        <FontIcon Glyph="&#xE8FB;"
+                            FontSize="16"/>
+                        <TextBlock Text="Ingresar"
+                            VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
                 <!-- Loading -->
-                <ProgressBar x:Name="LoadingBar"
-                             IsIndeterminate="True"
-                             Visibility="Collapsed"
+                <ProgressBar x:Name="LoadingBar" 
+                             IsIndeterminate="True" 
+                             Visibility="Collapsed" 
                              Margin="0,0,0,8"/>
-
                 <TextBlock Text="Contacta al administrador si olvidaste tu contraseña."
-                           FontSize="11"
-                           HorizontalAlignment="Center"
-                           Opacity="0.5"
-                           Foreground="White"
+                           FontSize="11" 
+                           HorizontalAlignment="Center" 
+                           Opacity="0.5" 
+                           Foreground="White" 
                            TextWrapping="Wrap"/>
             </StackPanel>
         </Border>
+
     </Grid>
 </Page>

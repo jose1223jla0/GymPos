@@ -5,6 +5,7 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>GymPos</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+	  <!--<WindowsPackageType>None</WindowsPackageType>-->
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PlatformTarget>x64</PlatformTarget>
@@ -14,9 +15,6 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Remove="Assets\register.jpg" />
-  </ItemGroup>
   <ItemGroup>
     <None Remove="Views\AsistenciaPage\ListAsistenciaPage.xaml" />
     <None Remove="Views\CajaPage\ResumenCajaPage.xaml" />
@@ -31,11 +29,13 @@
     <None Remove="Views\MembresiaPage\EditMembresiaPage.xaml" />
     <None Remove="Views\MembresiaPage\MembresiaPage.xaml" />
     <None Remove="Views\PerfilPage\PerfilUserPage.xaml" />
+    <None Remove="Views\ProductoPage\CreateProductoPage.xaml" />
     <None Remove="Views\ProductoPage\EditProductoPage.xaml" />
     <None Remove="Views\ProductoPage\ListProductoPage.xaml" />
     <None Remove="Views\SuscripcionPage\CreateSuscripcionPage.xaml" />
     <None Remove="Views\SuscripcionPage\ListSuscripcionPage.xaml" />
-    <None Remove="Views\UsuarioPage\CreateEditUsuarioPage.xaml" />
+    <None Remove="Views\UsuarioPage\CreateUsuarioPage.xaml" />
+    <None Remove="Views\UsuarioPage\EditUsuarioPage.xaml" />
     <None Remove="Views\UsuarioPage\ListUsuarioPage.xaml" />
     <None Remove="Views\VentasPage\CreateVentaPage.xaml" />
     <None Remove="Views\VentasPage\ListVentasPage.xaml" />
@@ -157,6 +157,15 @@
     <None Update="Views\LoginWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+    <Page Update="Views\ProductoPage\CreateProductoPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\UsuarioPage\EditUsuarioPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\UsuarioPage\CreateUsuarioPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\MembresiaPage\EditMembresiaPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -164,9 +173,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\PerfilPage\PerfilUserPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\UsuarioPage\CreateEditUsuarioPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\UsuarioPage\ListUsuarioPage.xaml">

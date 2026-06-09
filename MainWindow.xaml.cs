@@ -21,8 +21,8 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
         CargarUsuarioHeader();
         AplicarRestriccionesPorRol();
-        // La lógica de notificación de cierre de caja se maneja en ResumenCajaPage.
-        // No suscribimos globalmente aquí para evitar cerrar sesión automáticamente al cerrar la caja.
+        // Al crear la ventana principal, navegar al dashboard para evitar p�gina vac�a despu�s del login
+        contentFrame.Navigate(typeof(DashboardPage));
     }
 
     private async void OnCajaCerrada()
@@ -31,7 +31,7 @@ public sealed partial class MainWindow : Window
         await Task.Delay(1200);
         var auth = App.Services!.GetService(typeof(Services.IAuthService)) as Services.IAuthService;
         auth?.Logout();
-        var login = new Views.LoginWindow();
+        var login = new LoginWindow();
         login.Activate();
         this.Close();
     }

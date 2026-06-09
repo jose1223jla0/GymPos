@@ -91,6 +91,7 @@ public partial class App : Application
         services.AddTransient<EditUsuarioViewModel>();
         // Productos y carrito
         services.AddTransient<ListProductoViewModel>();
+        services.AddTransient<CreateProductoViewModel>();
         services.AddSingleton<CarritoViewModel>();
         //services.AddTransient<LoginViewModel>();
 

@@ -38,10 +38,8 @@ public partial class LoginViewModel : ObservableObject
             MostrarError("Por favor ingresa tu usuario y contraseña.");
             return;
         }
-
         IsLoading = true;
         HasError = false;
-
         try
         {
             var resultado = await _authService.LoginAsync(UsernameDni.Trim(), password);

@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using GymPos.Models;
+using System.Windows.Input;
 
 namespace GymPos.ViewModels.CarritoVM;
 
@@ -10,6 +12,13 @@ public partial class CarritoItemViewModel : ObservableObject
     public string NombreProducto { get; }
     public decimal PrecioUnitario { get; }
     public int StockDisponible { get; }
+
+    // ── Comandos inyectados desde VentaViewModel ────────────────────────────
+    // Se asignan al crear el item para que los botones +/- y Eliminar
+    // dentro del Flyout puedan bindear directamente sin ElementName.
+    public ICommand? AgregarCommand { get; set; }
+    public ICommand? QuitarCommand { get; set; }
+    public ICommand? EliminarCommand { get; set; }
 
     // ── Cantidad reactiva ───────────────────────────────────────────────────
     [ObservableProperty]
